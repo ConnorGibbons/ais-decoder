@@ -73,6 +73,14 @@ def rotCalc(rawRot):
         return (rawRot/4.733) ** 2
     elif rawRot < 0 and rawRot >= -126:
         return -((rawRot/4.733) ** 2)
+    
+def sogCalc(rawSOG):
+    if(rawSOG == 1023):
+        return "N/A"
+    elif(rawSOG == 1022):
+        return "SOG exceeds 102.2"
+    else:
+        return rawSOG / 10
 
 def rotToString(rot):
     if rot > 126:
@@ -156,16 +164,21 @@ def decodeCNB(binaryString):
             "MMSI": int(binaryString[8:38], 2),
             "Navigation Status": int(binaryString[38:42], 2),
             "Rate of Turn": rotCalc(int(binaryString[42:50], 2)),
+            "SOG": sogCalc(int(binaryString[50:60],2)),
+            "Position Accuracy": int(binaryString[60], 2),
         }
         CNBDictStringified = {
             "MMSI": str(CNBDict["MMSI"]),
             "Navigation Status": navigationStatus[CNBDict["Navigation Status"]],
             "Rate of Turn": rotToString(CNBDict["Rate of Turn"]),
+            "SOG": str(CNBDict["SOG"]) + " knots",
+            "Position Accuracy": "High" if CNBDict["Position Accuracy"] == 1 else "Low"
         }
-    except:
+    except Exception as e:
         CNBDict = {
             "Error": "Couldn't decode message"
         }
+        print(e)
     return (CNBDict, CNBDictStringified)
     
 
@@ -175,8 +188,8 @@ def decodeCNB(binaryString):
 # --- Main Program --- #
 
 startTime = time.time()
-#AISSentences = open("AISSample7,28,24.txt", "r").read().split("\n")
 AISSentences = open("nmea-sample", "r").read().split("\n")
+#AISSentences = open("AISSample7,28,24.txt", "r").read().split("\n")
 outfile = open("AISoutput.txt", "w")
 messages = []  
 for sentence in AISSentences:
