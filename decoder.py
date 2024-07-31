@@ -107,7 +107,12 @@ def headingCalc(rawHeading):
     else:
         return rawHeading
     
-
+def timestampCalc(rawTimestamp):
+    if rawTimestamp == 60 or rawTimestamp is None:
+        return -1 # Timestamp not available
+    else:
+        return rawTimestamp
+    
 
 def rotToString(rot):
     if rot > 126:
@@ -120,6 +125,26 @@ def rotToString(rot):
         return "Not turning"
     else:
         return "N/A"
+    
+def timestampToString(timestamp):
+    if timestamp == 61:
+        return "POS in manual input mode (61)"
+    elif timestamp == 62:
+        return "POS in dead reckoning mode (62)"
+    elif timestamp == 63:
+        return "System inoperative (63)"
+    else:
+        return str(timestamp)
+
+def maneuverIndicatorToString(maneuverIndicator):
+    if maneuverIndicator == 0:
+        return "Not available"
+    elif maneuverIndicator == 1:
+        return "No special maneuver"
+    elif maneuverIndicator == 2:
+        return "Special maneuver"
+    else:
+        return str(maneuverIndicator)
     
 def getVal(val):
     if val == -1:
@@ -213,6 +238,11 @@ def decodeCNB(binaryString):
             "Latitude": latitudeCalc(safe_int(get_segment(binaryString, 89, 116))),
             "COG": cogCalc(safe_int(get_segment(binaryString, 116, 128))),
             "True Heading": headingCalc(safe_int(get_segment(binaryString, 128, 137))),
+            "Timestamp": safe_int(get_segment(binaryString, 137, 143)),
+            "Maneuver Indicator": safe_int(get_segment(binaryString, 143, 145)),
+            "Spare": safe_int(get_segment(binaryString, 145, 148)),
+            "RAIM Flag": safe_int(get_segment(binaryString, 148, 149)),
+            "Radio Status": safe_int(get_segment(binaryString, 149, 168)) # Not adding a stringified verison yet -- resource here: http://www.ialathree.org/iala/pages/AIS/IALATech1.5.pdf
         }
     
         CNBDictStringified = {
@@ -224,6 +254,11 @@ def decodeCNB(binaryString):
             "Longitude": str(getVal(CNBDict["Longitude"])) + "°" if CNBDict["Longitude"] is not None else "N/A",
             "Latitude": str(getVal(CNBDict["Latitude"])) + "°" if CNBDict["Latitude"] is not None else "N/A",
             "COG": str(getVal(CNBDict["COG"])) + "°" if CNBDict["COG"] is not None else "N/A",
+            "True Heading": str(getVal(CNBDict["True Heading"])) + "°" if CNBDict["True Heading"] is not None else "N/A",
+            "Timestamp": timestampToString(getVal(CNBDict["Timestamp"])) + "s" if CNBDict["Timestamp"] is not None else "N/A",
+            "Maneuver Indicator": maneuverIndicatorToString(getVal(CNBDict["Maneuver Indicator"])) if CNBDict["Maneuver Indicator"] is not None else "N/A",
+            "Spare": str(getVal(CNBDict["Spare"])) if CNBDict["Spare"] is not None else "N/A",
+            "RAIM Flag": "In use" if CNBDict["RAIM Flag"] == 1 else "Not in use" if CNBDict["RAIM Flag"] == 0 else "N/A"
         }
 
     except Exception as e:
