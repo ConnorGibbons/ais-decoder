@@ -1,10 +1,12 @@
 #decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
+from typing import Tuple, Dict, Optional, Union
+from constants import navigationStatus, safe_int, get_segment
 
 # -- Calculation functions --
 
 # Rate of Turn calculation -- input = 4.733 * sqrt(rateOfTurn).
 # Output is the rate of turn in degrees per minute.
-def rotCalc(rawRot):
+def rotCalc(rawRot: Optional[int]) -> Union[int,float]:
     if rawRot == 128 or rawRot is None:
         return -1
     elif rawRot > 126:
@@ -20,7 +22,7 @@ def rotCalc(rawRot):
 
 # Speed over ground calculation -- input is sog in 0.1 knot units.
 # Output is the speed over ground in knots.
-def sogCalc(rawSOG):
+def sogCalc(rawSOG: Optional[int]) -> Union[int,float]:
     if rawSOG == 1023 or rawSOG is None:
         return -1
     else:
@@ -28,7 +30,7 @@ def sogCalc(rawSOG):
 
 # Longitude calculation -- input is in 1/600000 minutes.
 # Output is the longitude in degrees.
-def longitudeCalc(rawLongitude):
+def longitudeCalc(rawLongitude: Optional[int]) -> Union[int,float]:
     if rawLongitude == 181 or rawLongitude is None:
         return -1 # Longitude not available
     else:
@@ -36,7 +38,7 @@ def longitudeCalc(rawLongitude):
 
 # Latitude calculation -- input is in 1/600000 minutes.
 # Output is the latitude in degrees.
-def latitudeCalc(rawLatitude):
+def latitudeCalc(rawLatitude : Optional[int]) -> Union[int,float]:
     if rawLatitude == 91 or rawLatitude is None:
         return -1 # Latitude not available
     else:
@@ -44,7 +46,7 @@ def latitudeCalc(rawLatitude):
 
 # Course over ground calculation -- input is in 0.1 degrees.
 # Output is the course over ground in degrees.
-def cogCalc(rawCOG):
+def cogCalc(rawCOG: Optional[int]) -> Union[int,float]:
     if rawCOG == 3600 or rawCOG is None:
         return -1 # COG not available
     else:
@@ -52,13 +54,13 @@ def cogCalc(rawCOG):
 
 # Heading calculation -- input is in degrees.
 # Output is the heading in degrees (just here to check if heading is available).
-def headingCalc(rawHeading):
+def headingCalc(rawHeading: Optional[int]) -> int:
     if rawHeading == 511 or rawHeading is None:
         return -1 # Heading not available
     else:
         return rawHeading
     
-def timestampCalc(rawTimestamp):
+def timestampCalc(rawTimestamp: Optional[int]) -> int:
     if rawTimestamp == 60 or rawTimestamp is None:
         return -1 # Timestamp not available
     else:
@@ -67,7 +69,7 @@ def timestampCalc(rawTimestamp):
     
 # -- String conversion functions -- 
 
-def rotToString(rot):
+def rotToString(rot: Union[int,float]) -> str:
     if rot > 126:
         return "Turning right at more than 5 degrees per 30 seconds (No turn information available)"
     elif rot < -126:
@@ -79,7 +81,7 @@ def rotToString(rot):
     else:
         return "N/A"
     
-def timestampToString(timestamp):
+def timestampToString(timestamp: int) -> str:
     if timestamp == 61:
         return "POS in manual input mode (61)"
     elif timestamp == 62:
@@ -89,7 +91,7 @@ def timestampToString(timestamp):
     else:
         return str(timestamp)
 
-def maneuverIndicatorToString(maneuverIndicator):
+def maneuverIndicatorToString(maneuverIndicator: int) -> str:
     if maneuverIndicator == 0:
         return "Not available"
     elif maneuverIndicator == 1:
@@ -98,42 +100,21 @@ def maneuverIndicatorToString(maneuverIndicator):
         return "Special maneuver"
     else:
         return str(maneuverIndicator)
-    
-def getVal(val):
+
+# Filter function for returning "N/A" if the value is -1
+def getVal(val: Union[int,float]) -> Union[int,float,str]:
     if val == -1:
         return "N/A"
     else:
         return val
     
-# Navigation Status List
-navigationStatus = [
-    "Under way (Power)",
-    "At anchor",
-    "Not under command",
-    "Restricted maneuverability",
-    "Draft Constrained",
-    "Moored",
-    "Aground",
-    "Engaged in fishing",
-    "Under way (Sailing)",
-    "---", # Reserved for future use
-    "---", # Reserved for future use
-    "Towing Astern", # Regional use
-    "Towing Alongside", # Regional use
-    "---", # Reserved for future use
-    "AIS-SART is active",
-    "Undefined"
-]
 
 # Decodes a Class A Position Report (Message Types 1, 2, 3)
-def decodeCNB(binaryString):
+# Input is the binary payload as a string.
+# Output is a tuple containing a dictionary of the decoded values and a dictionary of the stringified values.
+def decodeCNB(binaryString: str) -> Tuple[Dict[str,Optional[int]], Dict[str,str]]:
     try:
-        def safe_int(value, base=2):
-            return int(value, base) if value else None
-    
-        def get_segment(binaryString, start, end):
-            return binaryString[start:end] if len(binaryString) >= end else None
-    
+
         CNBDict = {
             "MMSI": safe_int(get_segment(binaryString, 8, 38)),
             "Navigation Status": safe_int(get_segment(binaryString, 38, 42)),
