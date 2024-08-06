@@ -33,6 +33,8 @@ class AISMessage:
         self.checksum = endOfMessageComponents[1]
         self.payloadbitstring = getPayloadBinary(self.encodedMessage)
         self.messageTypeInt = int(self.payloadbitstring[0:6], 2)
+        if(self.messageTypeInt < 1 or self.messageTypeInt > 27):
+            raise Exception("Invalid message type")
         decodedPayload = decodePayload(self.payloadbitstring, self.messageTypeInt)
         self.payloadInfo = decodedPayload[0]
         self.payloadInfoStringified = decodedPayload[1]
