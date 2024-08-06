@@ -1,5 +1,5 @@
 # Message Types List (in order of message type number)
-messageTypes = [
+MESSAGE_TYPES = [
     "Position Report Class A", # -- Supported
     "Position Report Class A (Assigned schedule)", # -- Supported
     "Position Report Class A (Response to interrogation)", # -- Supported
@@ -30,7 +30,7 @@ messageTypes = [
 ]
 
 # Navigation Status List
-navigationStatus = [
+NAVIGATION_STATUS = [
     "Under way (Power)",
     "At anchor",
     "Not under command",
@@ -48,6 +48,11 @@ navigationStatus = [
     "AIS-SART is active",
     "Undefined"
 ]
+
+PAYLOAD_BINARY_LOOKUP = {
+    chr(i): bin(i - 48 if i - 48 < 40 else i - 56)[2:].zfill(6)
+    for i in range(48, 120)  # '0' to 'w' in ASCII
+}
 
 def safe_int(value, base=2):
     return int(value, base) if value else None

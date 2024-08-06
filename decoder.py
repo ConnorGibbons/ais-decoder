@@ -1,20 +1,13 @@
 import time
 from decode_CNB import decodeCNB
-from constants import messageTypes
+from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 
 def getPayloadBinary(encodedPayload):
-    decodedNumArray = []
-    for char in encodedPayload:
-        subtracted = ord(char) - 48
-        if subtracted > 40:
-            subtracted -= 8
-        decodedNumArray.append(bin(subtracted)[2:].zfill(6))
-    binaryString = "".join(decodedNumArray)
-    return binaryString
+    return ''.join(PAYLOAD_BINARY_LOOKUP[char] for char in encodedPayload)
 
 def getMessageTypeString(payload):
     messageTypeInt = int(payload[0:6], 2)
-    return messageTypes[messageTypeInt]
+    return MESSAGE_TYPES[messageTypeInt]
 
 def decodePayload(payload, messageTypeInt):
     if messageTypeInt in [1,2,3]:

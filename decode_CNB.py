@@ -1,6 +1,6 @@
 #decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
-from constants import navigationStatus, safe_int, get_segment
+from constants import NAVIGATION_STATUS, safe_int, get_segment
 
 # -- Calculation functions --
 
@@ -134,7 +134,7 @@ def decodeCNB(binaryString: str) -> Tuple[Dict[str,Optional[int]], Dict[str,str]
     
         CNBDictStringified = {
             "MMSI": str(CNBDict["MMSI"]) if CNBDict["MMSI"] is not None else "N/A",
-            "Navigation Status": navigationStatus[CNBDict["Navigation Status"]] if CNBDict["Navigation Status"] is not None else "N/A",
+            "Navigation Status": NAVIGATION_STATUS[CNBDict["Navigation Status"]] if CNBDict["Navigation Status"] is not None else "N/A",
             "Rate of Turn": rotToString(CNBDict["Rate of Turn"]) if CNBDict["Rate of Turn"] is not None else "N/A",
             "SOG": str(getVal(CNBDict["SOG"])) + " knots" if CNBDict["SOG"] is not None else "N/A",
             "Position Accuracy": "High" if CNBDict["Position Accuracy"] == 1 else "Low",
