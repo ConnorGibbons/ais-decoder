@@ -1,17 +1,16 @@
 import time
 from decode_CNB import decodeCNB
+from decode_BSR import decodeBSR
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 
 def getPayloadBinary(encodedPayload):
     return ''.join(PAYLOAD_BINARY_LOOKUP[char] for char in encodedPayload)
 
-def getMessageTypeString(payload):
-    messageTypeInt = int(payload[0:6], 2)
-    return MESSAGE_TYPES[messageTypeInt]
-
 def decodePayload(payload, messageTypeInt):
     if messageTypeInt in [1,2,3]:
         return decodeCNB(payload)
+    elif messageTypeInt == 4:
+        return decodeBSR(payload)
     else:
         return ({"Error: unsupported message type"}, {"Error: unsupported message type"})
 
@@ -49,7 +48,7 @@ class AISMessage:
         retString += f"Fill Bits: {self.fillBits}\n"
         retString += f"Checksum: {self.checksum}\n"
         #retString += f"Payload Bitstring: {self.payloadbitstring}\n"
-        retString += f"Message Type: {getMessageTypeString(self.payloadbitstring)}\n"
+        retString += f"Message Type: {MESSAGE_TYPES[self.messageTypeInt-1]}\n"
         retString += f"Payload Info: {self.payloadInfoStringified}\n"
         return retString
 

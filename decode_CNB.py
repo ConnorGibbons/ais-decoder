@@ -1,6 +1,6 @@
 #decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
-from constants import NAVIGATION_STATUS, safe_int, get_segment
+from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val
 
 # -- Calculation functions --
 
@@ -88,6 +88,8 @@ def timestampToString(timestamp: int) -> str:
         return "POS in dead reckoning mode (62)"
     elif timestamp == 63:
         return "System inoperative (63)"
+    elif timestamp == -1:
+        return "Timestamp not available"
     else:
         return str(timestamp)
 
@@ -98,15 +100,10 @@ def maneuverIndicatorToString(maneuverIndicator: int) -> str:
         return "No special maneuver"
     elif maneuverIndicator == 2:
         return "Special maneuver"
+    elif maneuverIndicator == -1:
+        return "Maneuver indicator not available"
     else:
         return str(maneuverIndicator)
-
-# Filter function for returning "N/A" if the value is -1
-def getVal(val: Union[int,float]) -> Union[int,float,str]:
-    if val == -1:
-        return "N/A"
-    else:
-        return val
     
 
 # Decodes a Class A Position Report (Message Types 1, 2, 3)
@@ -133,18 +130,18 @@ def decodeCNB(binaryString: str) -> Tuple[Dict[str,Optional[int]], Dict[str,str]
         }
     
         CNBDictStringified = {
-            "MMSI": str(CNBDict["MMSI"]) if CNBDict["MMSI"] is not None else "N/A",
-            "Navigation Status": NAVIGATION_STATUS[CNBDict["Navigation Status"]] if CNBDict["Navigation Status"] is not None else "N/A",
-            "Rate of Turn": rotToString(CNBDict["Rate of Turn"]) if CNBDict["Rate of Turn"] is not None else "N/A",
-            "SOG": str(getVal(CNBDict["SOG"])) + " knots" if CNBDict["SOG"] is not None else "N/A",
+            "MMSI": str(get_val(CNBDict["MMSI"])),
+            "Navigation Status": NAVIGATION_STATUS[CNBDict["Navigation Status"]] if CNBDict["Navigation Status"] != -1 else "N/A",
+            "Rate of Turn": rotToString(CNBDict["Rate of Turn"]),
+            "SOG": f"{get_val(CNBDict['SOG'])} knots",
             "Position Accuracy": "High" if CNBDict["Position Accuracy"] == 1 else "Low",
-            "Longitude": str(getVal(CNBDict["Longitude"])) + "°" if CNBDict["Longitude"] is not None else "N/A",
-            "Latitude": str(getVal(CNBDict["Latitude"])) + "°" if CNBDict["Latitude"] is not None else "N/A",
-            "COG": str(getVal(CNBDict["COG"])) + "°" if CNBDict["COG"] is not None else "N/A",
-            "True Heading": str(getVal(CNBDict["True Heading"])) + "°" if CNBDict["True Heading"] is not None else "N/A",
-            "Timestamp": timestampToString(getVal(CNBDict["Timestamp"])) + "s" if CNBDict["Timestamp"] is not None else "N/A",
-            "Maneuver Indicator": maneuverIndicatorToString(getVal(CNBDict["Maneuver Indicator"])) if CNBDict["Maneuver Indicator"] is not None else "N/A",
-            "Spare": str(getVal(CNBDict["Spare"])) if CNBDict["Spare"] is not None else "N/A",
+            "Longitude": f"{get_val(CNBDict['Longitude'])}°",
+            "Latitude": f"{get_val(CNBDict['Latitude'])}°",
+            "COG": f"{get_val(CNBDict['COG'])}°",
+            "True Heading": f"{get_val(CNBDict['True Heading'])}°",
+            "Timestamp": f"{timestampToString(get_val(CNBDict['Timestamp']))}s",
+            "Maneuver Indicator": maneuverIndicatorToString(get_val(CNBDict["Maneuver Indicator"])),
+            "Spare": str(get_val(CNBDict["Spare"])),
             "RAIM Flag": "In use" if CNBDict["RAIM Flag"] == 1 else "Not in use" if CNBDict["RAIM Flag"] == 0 else "N/A"
         }
 

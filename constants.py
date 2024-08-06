@@ -55,9 +55,15 @@ PAYLOAD_BINARY_LOOKUP = {
 }
 
 def safe_int(value, base=2):
-    return int(value, base) if value else None
+    return int(value, base) if value else -1
 
     
 def get_segment(binaryString, start, end):
     return binaryString[start:end] if len(binaryString) >= end else None
-    
+
+# Filter function for returning "N/A" if the value is -1
+def get_val(val):
+    if val == -1:
+        return "N/A"
+    else:
+        return val

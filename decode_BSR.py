@@ -1,19 +1,12 @@
 #decode_BSR.py -- logic for decoding Base Station Reports (Message Type 4)
-
+from constants import safe_int, get_segment, get_val
 # -- Calculation functions --
-
-
 
 
 # Decodes a Base Station Report (Message Type 4)    
 def decodeBSR(binaryString):
     try:
-        def safe_int(value, base=2):
-            return int(value, base) if value else None
-    
-        def get_segment(binaryString, start, end):
-            return binaryString[start:end] if len(binaryString) >= end else None
-        
+
         BSRDict = {
             "MMSI": safe_int(get_segment(binaryString, 8, 38)),
             "Year (UTC)": safe_int(get_segment(binaryString, 38, 52)),
@@ -22,10 +15,18 @@ def decodeBSR(binaryString):
             "Hour (UTC)": safe_int(get_segment(binaryString, 61, 66)),
             "Minute (UTC)": safe_int(get_segment(binaryString, 66, 72)),
             "Second (UTC)": safe_int(get_segment(binaryString, 72, 78)),
+            "Position Accuracy": safe_int(get_segment(binaryString, 78, 79)),
         }
 
         BSRDictStringified = {
-        
+            "MMSI": f"{get_val(BSRDict['MMSI'])}",
+            "Year (UTC)": f"{get_val(BSRDict['Year (UTC)'])}",
+            "Month (UTC)": f"{get_val(BSRDict['Month (UTC)'])}",
+            "Day (UTC)": f"{get_val(BSRDict['Day (UTC)'])}",
+            "Hour (UTC)": f"{get_val(BSRDict['Hour (UTC)'])}",
+            "Minute (UTC)": f"{get_val(BSRDict['Minute (UTC)'])}",
+            "Second (UTC)": f"{get_val(BSRDict['Second (UTC)'])}",
+            "Position Accuracy": "High" if BSRDict["Position Accuracy"] == 1 else "Low",
         }
     
     except Exception as e:
@@ -36,4 +37,5 @@ def decodeBSR(binaryString):
             "Error": "Couldn't decode message"
         }
         print(e)
+    
     return (BSRDict, BSRDictStringified)
