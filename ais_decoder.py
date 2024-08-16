@@ -50,25 +50,29 @@ class AISMessage:
         retString += f"Fill Bits: {self.fillBits}\n"
         retString += f"Checksum: {self.checksum}\n"
         #retString += f"Payload Bitstring: {self.payloadbitstring}\n"
+        retString += f"Longitude Bitstring: {self.payloadbitstring[61:89]}\n"
         retString += f"Message Type: {MESSAGE_TYPES[self.messageTypeInt-1]}\n"
         retString += f"Payload Info: {self.payloadInfoStringified}\n"
         return retString
 
 
 # --- Main Program --- #
+def main():
+    startTime = time.time()
+    AISSentences = open("nmea-sample", "r").read().split("\n")
+    #AISSentences = open("AISSample7,28,24.txt", "r").read().split("\n")
+    outfile = open("AISoutput.txt", "w")
+    messages = []  
+    for sentence in AISSentences:
+        try:
+            message = AISMessage(sentence)
+            messages.append(message)
+            outfile.write(message.toString() + "\n\n")
+        except:
+            outfile.write("Error decoding message: " + sentence + "\n\n")
+    outfile.close()
+    endTime = time.time()
+    print(f"Runtime: {(endTime-startTime)* 1000}ms")
 
-startTime = time.time()
-AISSentences = open("nmea-sample", "r").read().split("\n")
-#AISSentences = open("AISSample7,28,24.txt", "r").read().split("\n")
-outfile = open("AISoutput.txt", "w")
-messages = []  
-for sentence in AISSentences:
-    try:
-        message = AISMessage(sentence)
-        messages.append(message)
-        outfile.write(message.toString() + "\n\n")
-    except:
-        outfile.write("Error decoding message: " + sentence + "\n\n")
-outfile.close()
-endTime = time.time()
-print(f"Runtime: {(endTime-startTime)* 1000}ms")
+if __name__ == "__main__":
+    main()

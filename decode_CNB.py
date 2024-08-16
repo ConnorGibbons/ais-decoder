@@ -1,6 +1,6 @@
 #decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
-from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val
+from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, longitudeCalc, latitudeCalc
 
 # -- Calculation functions --
 
@@ -27,22 +27,6 @@ def sogCalc(rawSOG: Optional[int]) -> Union[int,float]:
         return -1
     else:
         return rawSOG / 10
-
-# Longitude calculation -- input is in 1/600000 minutes.
-# Output is the longitude in degrees.
-def longitudeCalc(rawLongitude: Optional[int]) -> Union[int,float]:
-    if rawLongitude == 181 or rawLongitude is None:
-        return -1 # Longitude not available
-    else:
-        return rawLongitude / 600000
-
-# Latitude calculation -- input is in 1/600000 minutes.
-# Output is the latitude in degrees.
-def latitudeCalc(rawLatitude : Optional[int]) -> Union[int,float]:
-    if rawLatitude == 91 or rawLatitude is None:
-        return -1 # Latitude not available
-    else:
-        return rawLatitude / 600000
 
 # Course over ground calculation -- input is in 0.1 degrees.
 # Output is the course over ground in degrees.
@@ -79,7 +63,7 @@ def rotToString(rot: Union[int,float]) -> str:
     elif rot == 0:
         return "Not turning"
     else:
-        return "N/A"
+        return f"{rot}° per minute"
     
 def timestampToString(timestamp: int) -> str:
     if timestamp == 61:
@@ -116,11 +100,11 @@ def decodeCNB(binaryString: str) -> Tuple[Dict[str,Optional[int]], Dict[str,str]
             "MMSI": safe_int(get_segment(binaryString, 8, 38)),
             "Navigation Status": safe_int(get_segment(binaryString, 38, 42)),
             "Rate of Turn": rotCalc(safe_int(get_segment(binaryString, 42, 50))),
-            "SOG": sogCalc(safe_int(get_segment(binaryString, 50, 60))),
+            "Speed Over Ground": sogCalc(safe_int(get_segment(binaryString, 50, 60))),
             "Position Accuracy": safe_int(get_segment(binaryString, 60, 61)),
             "Longitude": longitudeCalc(safe_int(get_segment(binaryString, 61, 89))),
             "Latitude": latitudeCalc(safe_int(get_segment(binaryString, 89, 116))),
-            "COG": cogCalc(safe_int(get_segment(binaryString, 116, 128))),
+            "Course Over Ground": cogCalc(safe_int(get_segment(binaryString, 116, 128))),
             "True Heading": headingCalc(safe_int(get_segment(binaryString, 128, 137))),
             "Timestamp": safe_int(get_segment(binaryString, 137, 143)),
             "Maneuver Indicator": safe_int(get_segment(binaryString, 143, 145)),
@@ -133,11 +117,11 @@ def decodeCNB(binaryString: str) -> Tuple[Dict[str,Optional[int]], Dict[str,str]
             "MMSI": str(get_val(CNBDict["MMSI"])),
             "Navigation Status": NAVIGATION_STATUS[CNBDict["Navigation Status"]] if CNBDict["Navigation Status"] != -1 else "N/A",
             "Rate of Turn": rotToString(CNBDict["Rate of Turn"]),
-            "SOG": f"{get_val(CNBDict['SOG'])} knots",
+            "Speed Over Ground": f"{get_val(CNBDict['Speed Over Ground'])} knots",
             "Position Accuracy": "High" if CNBDict["Position Accuracy"] == 1 else "Low",
             "Longitude": f"{get_val(CNBDict['Longitude'])}°",
             "Latitude": f"{get_val(CNBDict['Latitude'])}°",
-            "COG": f"{get_val(CNBDict['COG'])}°",
+            "Course Over Ground": f"{get_val(CNBDict['Course Over Ground'])}°",
             "True Heading": f"{get_val(CNBDict['True Heading'])}°",
             "Timestamp": f"{timestampToString(get_val(CNBDict['Timestamp']))}s",
             "Maneuver Indicator": maneuverIndicatorToString(get_val(CNBDict["Maneuver Indicator"])),
