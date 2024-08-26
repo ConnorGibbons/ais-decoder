@@ -1,5 +1,5 @@
 from typing import Optional, Union, List, Dict, Any
-
+import traceback
 # Message Types List (in order of message type number)
 MESSAGE_TYPES: List[str] = [
     "Position Report Class A", # -- Supported
@@ -55,22 +55,22 @@ PAYLOAD_BINARY_LOOKUP: Dict[str, str] = {
     chr(i): bin(i - 48 if i - 48 < 40 else i - 56)[2:].zfill(6)
     for i in range(48, 120)  # '0' to 'w' in ASCII
 }
-
-def safe_int(value: Optional[str], base: int = 2) -> int:
-    return int(value, base) if value else -1
-
-def int_twos_complement(binary_str: str, num_bits: int) -> int:
-    """
-    Convert a binary string to a signed integer using two's complement representation.
     
-    :param binary_str: The binary string to convert
-    :param num_bits: The number of bits in the binary representation
-    :return: The signed integer value
-    """
-    value = int(binary_str, 2)
-    if value & (1 << (num_bits - 1)):
-        value -= 1 << num_bits
-    return value
+def safe_int(value: Optional[str], base: int = 2, signed: bool = False) -> int:
+    if(value is not None):
+        try:
+            if(signed):
+                if(value[0] == "1"):
+                    return -(2**(len(value) - 1)) + int(value[1:], base)
+                else:
+                    return int(value, base)
+            else:
+                return int(value, base)
+        except Exception as e:
+            print("Erorr:", e)
+            return -1
+    else:
+        return -1
 
 def get_segment(binaryString: str, start: int, end: int) -> Optional[str]:
     return binaryString[start:end] if len(binaryString) >= end else None
@@ -88,7 +88,7 @@ def longitudeCalc(rawLongitude: Optional[str]) -> Union[int, float]:
     if rawLongitude is None or rawLongitude == "1" * 28:  # All 1s represent unavailable
         return -1  # Longitude not available
     else:
-        return int_twos_complement(rawLongitude, 28) / 600000
+        return rawLongitude / 600000
 
 # Latitude calculation -- input is in 1/600000 minutes.
 # Output is the latitude in degrees.

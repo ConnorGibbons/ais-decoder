@@ -28,7 +28,7 @@ class TestAISDecodeCNB(TestAISDecoder):
         self.assertEqual(self.aisMessage.payloadInfo["Position Accuracy"], 0)
     
     def test_decode_longitude(self):
-        self.assert_close(self.aisMessage.payloadInfo["Longitude"], 8.16)
+        self.assert_close(self.aisMessage.payloadInfo["Longitude"], -8.16)
 
     def test_decode_latitude(self):
         self.assert_close(self.aisMessage.payloadInfo["Latitude"], 35.9)

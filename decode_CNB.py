@@ -97,22 +97,21 @@ def decodeCNB(binaryString: str) -> Tuple[Dict[str,Optional[int]], Dict[str,str]
     try:
 
         CNBDict = {
-            "MMSI": safe_int(get_segment(binaryString, 8, 38)),
-            "Navigation Status": safe_int(get_segment(binaryString, 38, 42)),
-            "Rate of Turn": rotCalc(safe_int(get_segment(binaryString, 42, 50))),
-            "Speed Over Ground": sogCalc(safe_int(get_segment(binaryString, 50, 60))),
-            "Position Accuracy": safe_int(get_segment(binaryString, 60, 61)),
-            "Longitude": longitudeCalc(safe_int(get_segment(binaryString, 61, 89))),
-            "Latitude": latitudeCalc(safe_int(get_segment(binaryString, 89, 116))),
-            "Course Over Ground": cogCalc(safe_int(get_segment(binaryString, 116, 128))),
-            "True Heading": headingCalc(safe_int(get_segment(binaryString, 128, 137))),
-            "Timestamp": safe_int(get_segment(binaryString, 137, 143)),
-            "Maneuver Indicator": safe_int(get_segment(binaryString, 143, 145)),
-            "Spare": safe_int(get_segment(binaryString, 145, 148)),
-            "RAIM Flag": safe_int(get_segment(binaryString, 148, 149)),
+            "MMSI": safe_int(get_segment(binaryString, 8, 38)), # Unsigned integer
+            "Navigation Status": safe_int(get_segment(binaryString, 38, 42)), # Unsigned integer
+            "Rate of Turn": rotCalc(safe_int(get_segment(binaryString, 42, 50),  signed = True)), # Signed, scaled integer
+            "Speed Over Ground": sogCalc(safe_int(get_segment(binaryString, 50, 60))), # Unsigned, scaled integer
+            "Position Accuracy": safe_int(get_segment(binaryString, 60, 61)), # Boolean
+            "Longitude": longitudeCalc(safe_int(get_segment(binaryString, 61, 89), signed = True)), # Signed, scaled integer
+            "Latitude": latitudeCalc(safe_int(get_segment(binaryString, 89, 116), signed = True)), # Signed, scaled integer
+            "Course Over Ground": cogCalc(safe_int(get_segment(binaryString, 116, 128))), # Unsigned, scaled integer
+            "True Heading": headingCalc(safe_int(get_segment(binaryString, 128, 137))), # Unsigned integer
+            "Timestamp": safe_int(get_segment(binaryString, 137, 143)), # Unsigned integer
+            "Maneuver Indicator": safe_int(get_segment(binaryString, 143, 145)), # Unsigned integer
+            "Spare": safe_int(get_segment(binaryString, 145, 148)), # Unsigned integer
+            "RAIM Flag": safe_int(get_segment(binaryString, 148, 149)), # Boolean
             "Radio Status": safe_int(get_segment(binaryString, 149, 168)) # Not adding a stringified verison yet -- resource here: http://www.ialathree.org/iala/pages/AIS/IALATech1.5.pdf
         }
-    
         CNBDictStringified = {
             "MMSI": str(get_val(CNBDict["MMSI"])),
             "Navigation Status": NAVIGATION_STATUS[CNBDict["Navigation Status"]] if CNBDict["Navigation Status"] != -1 else "N/A",
