@@ -1,23 +1,30 @@
-#decode_BSR.py -- logic for decoding Base Station Reports (Message Type 4)
+# decode_BSR.py -- logic for decoding Base Station Reports (Message Type 4)
+from typing import Dict, Tuple, Optional
 from constants import safe_int, get_segment, get_val, calculate_latitude, calculate_longitude
 
-
-
-# Decodes a Base Station Report (Message Type 4)    
-def decode_BSR(binaryString):
+def decode_BSR(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
+    """
+    Decode a base station report (BSR) message, message type 4.
+    
+    Args:
+    binary_string (str): The binary payload as a string.
+    
+    Returns:
+    Tuple[Dict[str, Optional[int]], Dict[str, str]]: A tuple containing a dictionary of the decoded values
+    and a dictionary of the stringified values.
+    """
     try:
-
         BSRDict = {
-            "MMSI": safe_int(get_segment(binaryString, 8, 38)),
-            "Year (UTC)": safe_int(get_segment(binaryString, 38, 52)),
-            "Month (UTC)": safe_int(get_segment(binaryString, 52, 56)),
-            "Day (UTC)": safe_int(get_segment(binaryString, 56, 61)),
-            "Hour (UTC)": safe_int(get_segment(binaryString, 61, 66)),
-            "Minute (UTC)": safe_int(get_segment(binaryString, 66, 72)),
-            "Second (UTC)": safe_int(get_segment(binaryString, 72, 78)),
-            "Position Accuracy": safe_int(get_segment(binaryString, 78, 79)),
-            "Longitude": calculate_longitude(safe_int(get_segment(binaryString, 79, 107))),
-            "Latitude": calculate_latitude(safe_int(get_segment(binaryString, 107, 134))),
+            "MMSI": safe_int(get_segment(binary_string, 8, 38)),
+            "Year (UTC)": safe_int(get_segment(binary_string, 38, 52)),
+            "Month (UTC)": safe_int(get_segment(binary_string, 52, 56)),
+            "Day (UTC)": safe_int(get_segment(binary_string, 56, 61)),
+            "Hour (UTC)": safe_int(get_segment(binary_string, 61, 66)),
+            "Minute (UTC)": safe_int(get_segment(binary_string, 66, 72)),
+            "Second (UTC)": safe_int(get_segment(binary_string, 72, 78)),
+            "Position Accuracy": safe_int(get_segment(binary_string, 78, 79)),
+            "Longitude": calculate_longitude(safe_int(get_segment(binary_string, 79, 107), signed=True)),
+            "Latitude": calculate_latitude(safe_int(get_segment(binary_string, 107, 134), signed=True)),
         }
 
         BSRDictStringified = {

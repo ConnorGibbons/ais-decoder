@@ -1,6 +1,9 @@
 from typing import Optional, Union, List, Dict, Any
 
-# Message Types List (in order of message type number)
+
+# -- Constants --
+
+"""Message Types List (in order of message type number)"""
 MESSAGE_TYPES: List[str] = [
     "Position Report Class A", # -- Supported
     "Position Report Class A (Assigned schedule)", # -- Supported
@@ -31,7 +34,6 @@ MESSAGE_TYPES: List[str] = [
     "Long Range AIS Broadcast Message"
 ]
 
-# Navigation Status List
 NAVIGATION_STATUS: List[str] = [
     "Under way (Power)",
     "At anchor",
@@ -55,6 +57,9 @@ PAYLOAD_BINARY_LOOKUP: Dict[str, str] = {
     chr(i): bin(i - 48 if i - 48 < 40 else i - 56)[2:].zfill(6)
     for i in range(48, 120)  # '0' to 'w' in ASCII
 }
+
+
+# -- Utility Functions --
     
 def safe_int(value: Optional[str], base: int = 2, signed: bool = False) -> int:
     if(value is not None):
@@ -67,7 +72,7 @@ def safe_int(value: Optional[str], base: int = 2, signed: bool = False) -> int:
             else:
                 return int(value, base)
         except Exception as e:
-            print("Erorr:", e)
+            print("Error:", e)
             return -1
     else:
         return -1
@@ -75,25 +80,37 @@ def safe_int(value: Optional[str], base: int = 2, signed: bool = False) -> int:
 def get_segment(binaryString: str, start: int, end: int) -> Optional[str]:
     return binaryString[start:end] if len(binaryString) >= end else None
 
-# Filter function for returning "N/A" if the value is -1
 def get_val(val: Any) -> Union[str, Any]:
+    """Filter function for returning "N/A" if the value is -1"""
     if val == -1:
         return "N/A"
     else:
         return val
 
-# -- Calculation Functions -- For properties shared by multiple message types
+
+# -- Calculation Functions -- 
 
 def calculate_longitude(rawLongitude: Optional[str]) -> Union[int, float]:
-    if rawLongitude is None or rawLongitude == "1" * 28:  # All 1s represent unavailable
-        return -1  # Longitude not available
+    """Longitude calculation -- input is in 1/600000 minutes."""
+    if rawLongitude is None:
+        return -1  
     else:
         return rawLongitude / 600000
 
-# Latitude calculation -- input is in 1/600000 minutes.
-# Output is the latitude in degrees.
 def calculate_latitude(rawLatitude: Optional[int]) -> Union[int, float]:
-    if rawLatitude == 91 or rawLatitude is None:
-        return -1 # Latitude not available
+    """Latitude calculation -- input is in 1/600000 minutes."""
+    if rawLatitude is None:
+        return -1 
     else:
         return rawLatitude / 600000
+
+
+# -- String Conversion Functions -- 
+
+def longitude_to_string(longitude: Union[int, float]) -> str:
+    if longitude == -1:
+        return "Missing from AIS message"
+    elif longitude == 181:
+        return "Position not available"
+    else:
+        return f"{get_val(longitude)}°"
