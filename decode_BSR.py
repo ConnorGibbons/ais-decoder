@@ -1,10 +1,10 @@
 #decode_BSR.py -- logic for decoding Base Station Reports (Message Type 4)
-from constants import safe_int, get_segment, get_val, longitudeCalc, latitudeCalc
+from constants import safe_int, get_segment, get_val, calculate_latitude, calculate_longitude
 
 
 
 # Decodes a Base Station Report (Message Type 4)    
-def decodeBSR(binaryString):
+def decode_BSR(binaryString):
     try:
 
         BSRDict = {
@@ -16,8 +16,8 @@ def decodeBSR(binaryString):
             "Minute (UTC)": safe_int(get_segment(binaryString, 66, 72)),
             "Second (UTC)": safe_int(get_segment(binaryString, 72, 78)),
             "Position Accuracy": safe_int(get_segment(binaryString, 78, 79)),
-            "Longitude": longitudeCalc(safe_int(get_segment(binaryString, 79, 107))),
-            "Latitude": latitudeCalc(safe_int(get_segment(binaryString, 107, 134))),
+            "Longitude": calculate_longitude(safe_int(get_segment(binaryString, 79, 107))),
+            "Latitude": calculate_latitude(safe_int(get_segment(binaryString, 107, 134))),
         }
 
         BSRDictStringified = {

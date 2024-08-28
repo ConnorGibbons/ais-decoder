@@ -1,5 +1,5 @@
 from typing import Optional, Union, List, Dict, Any
-import traceback
+
 # Message Types List (in order of message type number)
 MESSAGE_TYPES: List[str] = [
     "Position Report Class A", # -- Supported
@@ -84,7 +84,7 @@ def get_val(val: Any) -> Union[str, Any]:
 
 # -- Calculation Functions -- For properties shared by multiple message types
 
-def longitudeCalc(rawLongitude: Optional[str]) -> Union[int, float]:
+def calculate_longitude(rawLongitude: Optional[str]) -> Union[int, float]:
     if rawLongitude is None or rawLongitude == "1" * 28:  # All 1s represent unavailable
         return -1  # Longitude not available
     else:
@@ -92,7 +92,7 @@ def longitudeCalc(rawLongitude: Optional[str]) -> Union[int, float]:
 
 # Latitude calculation -- input is in 1/600000 minutes.
 # Output is the latitude in degrees.
-def latitudeCalc(rawLatitude: Optional[int]) -> Union[int, float]:
+def calculate_latitude(rawLatitude: Optional[int]) -> Union[int, float]:
     if rawLatitude == 91 or rawLatitude is None:
         return -1 # Latitude not available
     else:

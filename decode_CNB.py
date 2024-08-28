@@ -1,71 +1,71 @@
-#decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
+# decode_class_a_position.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
-from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, longitudeCalc, latitudeCalc
+from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude
 
 # -- Calculation functions --
 
-# Rate of Turn calculation -- input = 4.733 * sqrt(rateOfTurn).
-# Output is the rate of turn in degrees per minute.
-def rotCalc(rawRot: Optional[int]) -> Union[int,float]:
-    if rawRot == 128 or rawRot is None:
+def calculate_rate_of_turn(raw_rot: Optional[int]) -> Union[int, float]:
+    """Calculate rate of turn in degrees per minute."""
+    if raw_rot is None:
         return -1
-    elif rawRot > 126:
+    elif raw_rot in (128, 0):
+        return raw_rot
+    elif raw_rot > 126:
         return 127
-    elif rawRot < -126:
+    elif raw_rot < -126:
         return -127
-    elif rawRot == 0:
-        return rawRot
-    elif rawRot > 0 and rawRot <= 126:
-        return (rawRot/4.733) ** 2
-    elif rawRot < 0 and rawRot >= -126:
-        return -((rawRot/4.733) ** 2)
+    elif 0 < raw_rot <= 126:
+        return (raw_rot / 4.733) ** 2
+    elif -126 <= raw_rot < 0:
+        return -((raw_rot / 4.733) ** 2)
 
-# Speed over ground calculation -- input is sog in 0.1 knot units.
-# Output is the speed over ground in knots.
-def sogCalc(rawSOG: Optional[int]) -> Union[int,float]:
-    if rawSOG == 1023 or rawSOG is None:
+def calculate_speed_over_ground(raw_sog: Optional[int]) -> Union[int, float]:
+    """Calculate speed over ground in knots."""
+    if raw_sog is None:
         return -1
+    elif raw_sog in (1023, 1022):
+        return raw_sog
     else:
-        return rawSOG / 10
+        return raw_sog / 10
 
-# Course over ground calculation -- input is in 0.1 degrees.
-# Output is the course over ground in degrees.
-def cogCalc(rawCOG: Optional[int]) -> Union[int,float]:
-    if rawCOG == 3600 or rawCOG is None:
-        return -1 # COG not available
+def calculate_course_over_ground(raw_cog: Optional[int]) -> Union[int, float]:
+    """Calculate course over ground in degrees."""
+    if raw_cog == 3600 or raw_cog is None:
+        return -1  # COG not available
     else:
-        return rawCOG / 10
+        return raw_cog / 10
 
-# Heading calculation -- input is in degrees.
-# Output is the heading in degrees (just here to check if heading is available).
-def headingCalc(rawHeading: Optional[int]) -> int:
-    if rawHeading == 511 or rawHeading is None:
-        return -1 # Heading not available
+def calculate_heading(raw_heading: Optional[int]) -> int:
+    """Calculate heading in degrees."""
+    if raw_heading == 511 or raw_heading is None:
+        return -1  # Heading not available
     else:
-        return rawHeading
-    
-def timestampCalc(rawTimestamp: Optional[int]) -> int:
-    if rawTimestamp == 60 or rawTimestamp is None:
-        return -1 # Timestamp not available
-    else:
-        return rawTimestamp
-    
-    
-# -- String conversion functions -- 
+        return raw_heading
 
-def rotToString(rot: Union[int,float]) -> str:
+def calculate_timestamp(raw_timestamp: Optional[int]) -> int:
+    """Calculate timestamp."""
+    if raw_timestamp == 60 or raw_timestamp is None:
+        return -1  # Timestamp not available
+    else:
+        return raw_timestamp
+
+# -- String conversion functions --
+
+def rate_of_turn_to_string(rot: Union[int, float]) -> str:
+    """Convert rate of turn to string representation."""
     if rot > 126:
         return "Turning right at more than 5 degrees per 30 seconds (No turn information available)"
     elif rot < -126:
         return "Turning left at more than 5 degrees per 30 seconds (No turn information available)"
-    elif rot == 128 or rot == -1:
+    elif rot in (128, -1):
         return "Turning information not available"
     elif rot == 0:
         return "Not turning"
     else:
         return f"{rot}° per minute"
-    
-def timestampToString(timestamp: int) -> str:
+
+def timestamp_to_string(timestamp: int) -> str:
+    """Convert timestamp to string representation."""
     if timestamp == 61:
         return "POS in manual input mode (61)"
     elif timestamp == 62:
@@ -73,68 +73,82 @@ def timestampToString(timestamp: int) -> str:
     elif timestamp == 63:
         return "System inoperative (63)"
     elif timestamp == -1:
-        return "Timestamp not available"
+        return "Missing from AIS message"
     else:
         return str(timestamp)
 
-def maneuverIndicatorToString(maneuverIndicator: int) -> str:
-    if maneuverIndicator == 0:
+def maneuver_indicator_to_string(maneuver_indicator: int) -> str:
+    """Convert maneuver indicator to string representation."""
+    if maneuver_indicator == 0:
         return "Not available"
-    elif maneuverIndicator == 1:
+    elif maneuver_indicator == 1:
         return "No special maneuver"
-    elif maneuverIndicator == 2:
+    elif maneuver_indicator == 2:
         return "Special maneuver"
-    elif maneuverIndicator == -1:
-        return "Maneuver indicator not available"
+    elif maneuver_indicator == -1:
+        return "Missing from AIS message"
     else:
-        return str(maneuverIndicator)
+        return str(maneuver_indicator)
+
+def speed_over_ground_to_string(sog: Union[int, float]) -> str:
+    """Convert speed over ground to string representation."""
+    if sog == -1:
+        return "Missing from AIS message"
+    elif sog == 1023:
+        return "SOG not available."
+    elif sog == 1022:
+        return "SOG exceeds 102.2 knots."
+    else:
+        return f"{sog} knots"
+
+def decode_CNB(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
+    """
+    Decode a Class A Position Report (Message Types 1, 2, 3).
     
-
-# Decodes a Class A Position Report (Message Types 1, 2, 3)
-# Input is the binary payload as a string.
-# Output is a tuple containing a dictionary of the decoded values and a dictionary of the stringified values.
-def decodeCNB(binaryString: str) -> Tuple[Dict[str,Optional[int]], Dict[str,str]]:
+    Args:
+    binary_string (str): The binary payload as a string.
+    
+    Returns:
+    Tuple[Dict[str, Optional[int]], Dict[str, str]]: A tuple containing a dictionary of the decoded values
+    and a dictionary of the stringified values.
+    """
     try:
-
-        CNBDict = {
-            "MMSI": safe_int(get_segment(binaryString, 8, 38)), # Unsigned integer
-            "Navigation Status": safe_int(get_segment(binaryString, 38, 42)), # Unsigned integer
-            "Rate of Turn": rotCalc(safe_int(get_segment(binaryString, 42, 50),  signed = True)), # Signed, scaled integer
-            "Speed Over Ground": sogCalc(safe_int(get_segment(binaryString, 50, 60))), # Unsigned, scaled integer
-            "Position Accuracy": safe_int(get_segment(binaryString, 60, 61)), # Boolean
-            "Longitude": longitudeCalc(safe_int(get_segment(binaryString, 61, 89), signed = True)), # Signed, scaled integer
-            "Latitude": latitudeCalc(safe_int(get_segment(binaryString, 89, 116), signed = True)), # Signed, scaled integer
-            "Course Over Ground": cogCalc(safe_int(get_segment(binaryString, 116, 128))), # Unsigned, scaled integer
-            "True Heading": headingCalc(safe_int(get_segment(binaryString, 128, 137))), # Unsigned integer
-            "Timestamp": safe_int(get_segment(binaryString, 137, 143)), # Unsigned integer
-            "Maneuver Indicator": safe_int(get_segment(binaryString, 143, 145)), # Unsigned integer
-            "Spare": safe_int(get_segment(binaryString, 145, 148)), # Unsigned integer
-            "RAIM Flag": safe_int(get_segment(binaryString, 148, 149)), # Boolean
-            "Radio Status": safe_int(get_segment(binaryString, 149, 168)) # Not adding a stringified verison yet -- resource here: http://www.ialathree.org/iala/pages/AIS/IALATech1.5.pdf
+        decoded_data = {
+            "MMSI": safe_int(get_segment(binary_string, 8, 38)),
+            "Navigation Status": safe_int(get_segment(binary_string, 38, 42)),
+            "Rate of Turn": calculate_rate_of_turn(safe_int(get_segment(binary_string, 42, 50), signed=True)),
+            "Speed Over Ground": calculate_speed_over_ground(safe_int(get_segment(binary_string, 50, 60))),
+            "Position Accuracy": safe_int(get_segment(binary_string, 60, 61)),
+            "Longitude": calculate_longitude(safe_int(get_segment(binary_string, 61, 89), signed=True)),
+            "Latitude": calculate_latitude(safe_int(get_segment(binary_string, 89, 116), signed=True)),
+            "Course Over Ground": calculate_course_over_ground(safe_int(get_segment(binary_string, 116, 128))),
+            "True Heading": calculate_heading(safe_int(get_segment(binary_string, 128, 137))),
+            "Timestamp": safe_int(get_segment(binary_string, 137, 143)),
+            "Maneuver Indicator": safe_int(get_segment(binary_string, 143, 145)),
+            "Spare": safe_int(get_segment(binary_string, 145, 148)),
+            "RAIM Flag": safe_int(get_segment(binary_string, 148, 149)),
+            "Radio Status": safe_int(get_segment(binary_string, 149, 168))
         }
-        CNBDictStringified = {
-            "MMSI": str(get_val(CNBDict["MMSI"])),
-            "Navigation Status": NAVIGATION_STATUS[CNBDict["Navigation Status"]] if CNBDict["Navigation Status"] != -1 else "N/A",
-            "Rate of Turn": rotToString(CNBDict["Rate of Turn"]),
-            "Speed Over Ground": f"{get_val(CNBDict['Speed Over Ground'])} knots",
-            "Position Accuracy": "High" if CNBDict["Position Accuracy"] == 1 else "Low",
-            "Longitude": f"{get_val(CNBDict['Longitude'])}°",
-            "Latitude": f"{get_val(CNBDict['Latitude'])}°",
-            "Course Over Ground": f"{get_val(CNBDict['Course Over Ground'])}°",
-            "True Heading": f"{get_val(CNBDict['True Heading'])}°",
-            "Timestamp": f"{timestampToString(get_val(CNBDict['Timestamp']))}s",
-            "Maneuver Indicator": maneuverIndicatorToString(get_val(CNBDict["Maneuver Indicator"])),
-            "Spare": str(get_val(CNBDict["Spare"])),
-            "RAIM Flag": "In use" if CNBDict["RAIM Flag"] == 1 else "Not in use" if CNBDict["RAIM Flag"] == 0 else "N/A"
+
+        stringified_data = {
+            "MMSI": str(get_val(decoded_data["MMSI"])),
+            "Navigation Status": NAVIGATION_STATUS[decoded_data["Navigation Status"]] if decoded_data["Navigation Status"] != -1 else "N/A",
+            "Rate of Turn": rate_of_turn_to_string(decoded_data["Rate of Turn"]),
+            "Speed Over Ground": speed_over_ground_to_string(decoded_data["Speed Over Ground"]),
+            "Position Accuracy": "High" if decoded_data["Position Accuracy"] == 1 else "Low",
+            "Longitude": f"{get_val(decoded_data['Longitude'])}°",
+            "Latitude": f"{get_val(decoded_data['Latitude'])}°",
+            "Course Over Ground": f"{get_val(decoded_data['Course Over Ground'])}°",
+            "True Heading": f"{get_val(decoded_data['True Heading'])}°",
+            "Timestamp": f"{timestamp_to_string(get_val(decoded_data['Timestamp']))}s",
+            "Maneuver Indicator": maneuver_indicator_to_string(get_val(decoded_data["Maneuver Indicator"])),
+            "Spare": str(get_val(decoded_data["Spare"])),
+            "RAIM Flag": "In use" if decoded_data["RAIM Flag"] == 1 else "Not in use" if decoded_data["RAIM Flag"] == 0 else "N/A"
         }
 
     except Exception as e:
-        CNBDict = {
-            "Error": "Couldn't decode message"
-        }
-        CNBDictStringified = {
-            "Error": "Couldn't decode message"
-        }
+        decoded_data = {"Error": "Couldn't decode message"}
+        stringified_data = {"Error": "Couldn't decode message"}
         print(e)
 
-    return (CNBDict, CNBDictStringified)
+    return (decoded_data, stringified_data)

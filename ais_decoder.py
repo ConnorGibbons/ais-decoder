@@ -1,6 +1,6 @@
 import time
-from decode_CNB import decodeCNB
-from decode_BSR import decodeBSR
+from decode_CNB import decode_CNB
+from decode_BSR import decode_BSR
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 
 def getPayloadBinary(encodedPayload):
@@ -8,9 +8,9 @@ def getPayloadBinary(encodedPayload):
 
 def decodePayload(payload, messageTypeInt):
     if messageTypeInt in [1,2,3]:
-        return decodeCNB(payload)
+        return decode_CNB(payload)
     elif messageTypeInt == 4:
-        return decodeBSR(payload)
+        return decode_BSR(payload)
     else:
         return ({"Error: unsupported message type"}, {"Error: unsupported message type"})
 
