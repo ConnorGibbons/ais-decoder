@@ -1,7 +1,7 @@
 import unittest
 import ais_decoder
 import math
-
+# Hi
 class TestAISDecoder(unittest.TestCase):
     def assert_close(self, a, b, abs_tol=0.1):
         if not math.isclose(a, b, abs_tol=abs_tol):
