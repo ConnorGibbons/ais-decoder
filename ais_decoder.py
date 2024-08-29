@@ -50,7 +50,6 @@ class AISMessage:
         retString += f"Fill Bits: {self.fillBits}\n"
         retString += f"Checksum: {self.checksum}\n"
         #retString += f"Payload Bitstring: {self.payloadbitstring}\n"
-        retString += f"Longitude Bitstring: {self.payloadbitstring[61:89]}\n"
         retString += f"Message Type: {MESSAGE_TYPES[self.messageTypeInt-1]}\n"
         retString += f"Payload Info: {self.payloadInfoStringified}\n"
         return retString

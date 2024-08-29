@@ -166,7 +166,7 @@ def decode_CNB(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
             "Timestamp": f"{timestamp_to_string(get_val(decoded_data['Timestamp']))}",
             "Maneuver Indicator": maneuver_indicator_to_string(get_val(decoded_data["Maneuver Indicator"])),
             "Spare": str(get_val(decoded_data["Spare"])),
-            "RAIM Flag": "In use" if decoded_data["RAIM Flag"] == 1 else "Not in use" if decoded_data["RAIM Flag"] == 0 else "N/A"
+            "RAIM Flag": "In use" if decoded_data["RAIM Flag"] == 1 else "Not in use" if decoded_data["RAIM Flag"] == 0 else "Missing from AIS message"
         }
 
     except Exception as e:
