@@ -3,3 +3,4 @@ nmea-sample
 .DS_Store
 __pycache__/
 __pycache__/decode_CNB.cpython-312.pyc
+test.txt

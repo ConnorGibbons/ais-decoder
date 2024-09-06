@@ -3,6 +3,27 @@ from typing import Optional, Union, List, Dict, Any
 
 # -- Constants --
 
+"""EFIX Types List (in order of EFIX type number)"""
+"""EFIX = Electronic Fixing Device, this describes which GNSS system the device uses"""
+EFIX_TYPES: List[str] = [
+    "Undefined",
+    "GPS",
+    "GLONASS",
+    "Combined GPS/GLONASS",
+    "Loran-C",
+    "Chayka",
+    "Integrated Navigation System",
+    "Surveyed",
+    "Galileo",
+    "Unknown",
+    "Unknown",
+    "Unknown",
+    "Unknown",
+    "Unknown",
+    "Unknown",
+    "Internal GNSS"
+]
+
 """Message Types List (in order of message type number)"""
 MESSAGE_TYPES: List[str] = [
     "Position Report Class A", # -- Supported
@@ -56,6 +77,11 @@ NAVIGATION_STATUS: List[str] = [
 PAYLOAD_BINARY_LOOKUP: Dict[str, str] = {
     chr(i): bin(i - 48 if i - 48 < 40 else i - 56)[2:].zfill(6)
     for i in range(48, 120)  # '0' to 'w' in ASCII
+}
+
+BINARY_ASCII_LOOKUP: Dict[str, str] = {
+    bin(i)[2:].zfill(6): chr(i + 64 if i < 31  else i )
+    for i in range(64)  # 0 to 63
 }
 
 
@@ -113,4 +139,17 @@ def longitude_to_string(longitude: Union[int, float]) -> str:
     elif longitude == 181:
         return "Position not available"
     else:
-        return f"{get_val(longitude)}°"
+        return f"{longitude}°"
+    
+def latitude_to_string(latitude: Union[int, float]) -> str:
+    if latitude == -1:
+        return "Missing from AIS message"
+    elif latitude == 91:
+        return "Position not available"
+    else:
+        return f"{latitude}°"
+    
+def bitstring_to_ascii(bitstring: str) -> str:
+    if bitstring is None:
+        return "Missing from AIS message"
+    return "".join(map(BINARY_ASCII_LOOKUP.get, [bitstring[i:i+6] for i in range(0, len(bitstring), 6)]))    

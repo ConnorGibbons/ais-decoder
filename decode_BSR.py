@@ -1,25 +1,6 @@
 # decode_BSR.py -- logic for decoding Base Station Reports (Message Type 4)
 from typing import Dict, Tuple, Optional, List
-from constants import safe_int, get_segment, get_val, calculate_latitude, calculate_longitude
-
-EFIX_TYPES: List[str] = [
-    "Undefined",
-    "GPS",
-    "GLONASS",
-    "Combined GPS/GLONASS",
-    "Loran-C",
-    "Chayka",
-    "Integrated Navigation System",
-    "Surveyed",
-    "Galileo",
-    "Unknown",
-    "Unknown",
-    "Unknown",
-    "Unknown",
-    "Unknown",
-    "Unknown",
-    "Internal GNSS"
-]
+from constants import EFIX_TYPES, safe_int, get_segment, get_val, calculate_latitude, calculate_longitude, latitude_to_string, longitude_to_string
 
 
 def decode_BSR(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
@@ -60,8 +41,8 @@ def decode_BSR(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
             "Minute (UTC)": f"{get_val(decoded_data['Minute (UTC)'])}",
             "Second (UTC)": f"{get_val(decoded_data['Second (UTC)'])}",
             "Position Accuracy": "High" if decoded_data["Position Accuracy"] == 1 else "Low",
-            "Longitude": f"{get_val(decoded_data['Longitude'])}°",
-            "Latitude": f"{get_val(decoded_data['Latitude'])}°",
+            "Longitude": f"{longitude_to_string(decoded_data['Longitude'])}",
+            "Latitude": f"{latitude_to_string(decoded_data['Latitude'])}",
             "Type of Electronic Position Fixing Device": EFIX_TYPES[decoded_data["Type of Electronic Position Fixing Device"]],
             "Spare": f"{get_val(decoded_data['Spare'])}",
             "RAIM Flag": "In use" if decoded_data["RAIM Flag"] == 1 else "Not in use" if decoded_data["RAIM Flag"] == 0 else "Missing from AIS message"

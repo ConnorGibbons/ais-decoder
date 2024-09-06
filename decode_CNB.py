@@ -1,6 +1,6 @@
-# decode_class_a_position.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
+# decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
-from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude
+from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string
 
 
 # -- Calculation functions --
@@ -159,8 +159,8 @@ def decode_CNB(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
             "Rate of Turn": rate_of_turn_to_string(decoded_data["Rate of Turn"]),
             "Speed Over Ground": speed_over_ground_to_string(decoded_data["Speed Over Ground"]),
             "Position Accuracy": "High" if decoded_data["Position Accuracy"] == 1 else "Low",
-            "Longitude": f"{get_val(decoded_data['Longitude'])}",
-            "Latitude": f"{get_val(decoded_data['Latitude'])}",
+            "Longitude": f"{longitude_to_string(decoded_data['Longitude'])}",
+            "Latitude": f"{latitude_to_string(decoded_data['Latitude'])}",
             "Course Over Ground": f"{course_over_ground_to_string(get_val(decoded_data['Course Over Ground']))}",
             "True Heading": f"{heading_to_string(get_val(decoded_data['True Heading']))}",
             "Timestamp": f"{timestamp_to_string(get_val(decoded_data['Timestamp']))}",
@@ -172,6 +172,5 @@ def decode_CNB(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
     except Exception as e:
         decoded_data = {"Error": "Couldn't decode message"}
         stringified_data = {"Error": "Couldn't decode message"}
-        print(e)
 
     return (decoded_data, stringified_data)
