@@ -1,6 +1,6 @@
 # decode_VRD.py -- logic for decoding Static and Voyage Related Data (Message Type 5)
 from typing import Dict, Tuple, Optional
-from constants import safe_int, get_segment, get_val, bitstring_to_ascii, EFIX_TYPES
+from constants import safe_int, get_segment, get_val, bitstring_to_ascii, EFIX_TYPES, SHIP_TYPE, AIS_TYPES, MONTHS
 
 def decode_VRD(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
     """
@@ -19,8 +19,8 @@ def decode_VRD(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
             "MMSI": safe_int(get_segment(binary_string, 8, 38)),
             "AIS Version": safe_int(get_segment(binary_string, 38, 40)),
             "IMO Number": safe_int(get_segment(binary_string, 40, 70)),
-            "Call Sign": bitstring_to_ascii(get_segment(binary_string, 70, 112)),
-            "Vessel Name": bitstring_to_ascii(get_segment(binary_string, 112, 232)),
+            "Call Sign": bitstring_to_ascii(get_segment(binary_string, 70, 112)).split('@')[0].strip(),
+            "Vessel Name": bitstring_to_ascii(get_segment(binary_string, 112, 232)).split('@')[0].strip(),
             "Type of Ship and Cargo": safe_int(get_segment(binary_string, 232, 240)),
             "Dimensions to Bow": safe_int(get_segment(binary_string, 240, 249)),
             "Dimensions to Stern": safe_int(get_segment(binary_string, 249, 258)),
@@ -32,31 +32,31 @@ def decode_VRD(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
             "ETA Hour": safe_int(get_segment(binary_string, 283, 288)),
             "ETA Minute": safe_int(get_segment(binary_string, 288, 294)),
             "Draught": safe_int(get_segment(binary_string, 294, 302)) / 10,
-            "Destination": get_segment(binary_string, 302, 462),
-            "Data Terminal Ready": safe_int(get_segment(binary_string, 462, 463)),
-            "Spare": safe_int(get_segment(binary_string, 463, 564))
+            "Destination": bitstring_to_ascii(get_segment(binary_string, 302, 422)).split('@')[0].strip(),
+            "Data Terminal Ready": safe_int(get_segment(binary_string, 422, 423)),
+            "Spare": safe_int(get_segment(binary_string, 423, 424))
         }
 
         stringified_data = {
             "MMSI": f"{get_val(decoded_data['MMSI'])}",
-            "AIS Version": f"{get_val(decoded_data['AIS Version'])}",
+            "AIS Version": f"{AIS_TYPES[decoded_data['AIS Version']] if decoded_data['AIS Version'] in AIS_TYPES else 'Unknown'}",
             "IMO Number": f"{get_val(decoded_data['IMO Number'])}",
             "Call Sign": decoded_data['Call Sign'],
             "Vessel Name": decoded_data['Vessel Name'],
-            "Type of Ship and Cargo": f"{get_val(decoded_data['Type of Ship and Cargo'])}",
-            "Dimensions to Bow": f"{get_val(decoded_data['Dimensions to Bow'])}",
-            "Dimensions to Stern": f"{get_val(decoded_data['Dimensions to Stern'])}",
-            "Dimensions to Port": f"{get_val(decoded_data)['Dimensions to Port']}",
-            "Dimensions to Starboard": f"{get_val(decoded_data)['Dimensions to Starboard']}",
-            "Position Fixing Device": f"{get_val(decoded_data['Position Fixing Device'])}",
-            "ETA Month": f"{get_val(decoded_data['ETA Month'])}",
-            "ETA Day": f"{get_val(decoded_data['ETA Day'])}",
-            "ETA Hour": f"{get_val(decoded_data['ETA Hour'])}",
-            "ETA Minute": f"{get_val(decoded_data['ETA Minute'])}",
-            "Draught": f"{get_val(decoded_data['Draught'])}",
+            "Type of Ship and Cargo": f"{SHIP_TYPE[decoded_data['Type of Ship and Cargo']] if decoded_data['Type of Ship and Cargo'] in SHIP_TYPE else 'Unknown'}",
+            "Dimensions to Bow": f"{get_val(decoded_data['Dimensions to Bow'])} m",
+            "Dimensions to Stern": f"{get_val(decoded_data['Dimensions to Stern'])} m",
+            "Dimensions to Port": f"{get_val(decoded_data)['Dimensions to Port']} m",
+            "Dimensions to Starboard": f"{get_val(decoded_data)['Dimensions to Starboard']} m",
+            "Position Fixing Device": f"{EFIX_TYPES[decoded_data['Position Fixing Device']] if decoded_data['Position Fixing Device'] in EFIX_TYPES else 'Unknown'}",
+            "ETA Month": f"{MONTHS[decoded_data['ETA Month']] if decoded_data['ETA Month'] in MONTHS else 'N/A'}",
+            "ETA Day": f"{get_val(decoded_data['ETA Day'])}" if decoded_data['ETA Day'] != 0 else 'N/A',
+            "ETA Hour": f"{get_val(decoded_data['ETA Hour'])}" if decoded_data['ETA Hour'] != 24 else 'N/A',
+            "ETA Minute": f"{get_val(decoded_data['ETA Minute'])}" if decoded_data['ETA Minute'] != 60 else 'N/A',
+            "Draught": f"{get_val(decoded_data['Draught'])} m",
             "Destination": f"{decoded_data['Destination']}",
             "Data Terminal Ready": f"{get_val(decoded_data['Data Terminal Ready'])}",
-            "Spare": f"{get_val(decoded_data['Spare'])}"
+            "Spare": f"{get_val(decoded_data['Spare'])}",
         }
     except Exception as e:
         decoded_data = {

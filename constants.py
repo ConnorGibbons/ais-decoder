@@ -5,24 +5,19 @@ from typing import Optional, Union, List, Dict, Any
 
 """EFIX Types List (in order of EFIX type number)"""
 """EFIX = Electronic Fixing Device, this describes which GNSS system the device uses"""
-EFIX_TYPES: List[str] = [
-    "Undefined",
-    "GPS",
-    "GLONASS",
-    "Combined GPS/GLONASS",
-    "Loran-C",
-    "Chayka",
-    "Integrated Navigation System",
-    "Surveyed",
-    "Galileo",
-    "Unknown",
-    "Unknown",
-    "Unknown",
-    "Unknown",
-    "Unknown",
-    "Unknown",
-    "Internal GNSS"
-]
+EFIX_TYPES: Dict[int,str] = {
+    0: "Undefined",
+    1: "GPS",
+    2: "GLONASS",
+    3: "Combined GPS/GLONASS",
+    4: "Loran-C",
+    5: "Chayka",
+    6: "Integrated Navigation System",
+    7: "Surveyed",
+    8: "Galileo",
+    **{i: "Unknown" for i in range(9, 15)},
+    15: "Internal GNSS"
+}
 
 """Message Types List (in order of message type number)"""
 MESSAGE_TYPES: List[str] = [
@@ -74,6 +69,95 @@ NAVIGATION_STATUS: List[str] = [
     "Undefined (default)"
 ]
 
+SHIP_TYPE: Dict[int,str] = {
+    0: "Not available (default)",
+    **{i: "Reserved for future use" for i in range(1, 20)},
+    20: "Wing in ground (WIG)",
+    21: "Wing in ground (WIG), Hazardous category A",
+    22: "Wing in ground (WIG), Hazardous category B",
+    23: "Wing in ground (WIG), Hazardous category C",
+    24: "Wing in ground (WIG), Hazardous category D",
+    **{i: "Wing in ground (WIG), Reserved for future use" for i in range(25, 30)},
+    30: "Fishing",
+    31: "Towing",
+    32: "Towing: length exceeds 200m or breadth exceeds 25m",
+    33: "Dredging or underwater ops",
+    34: "Diving ops",
+    35: "Military ops",
+    36: "Sailing",
+    37: "Pleasure Craft",
+    38: "Reserved",
+    39: "Reserved",
+    40: "High speed craft (HSC)",
+    41: "High speed craft (HSC), Hazardous category A",
+    42: "High speed craft (HSC), Hazardous category B",
+    43: "High speed craft (HSC), Hazardous category C",
+    44: "High speed craft (HSC), Hazardous category D",
+    **{i: "High speed craft (HSC), Reserved for future use" for i in range(45, 49)},
+    49: "High speed craft (HSC)",
+    50: "Pilot Vessel",
+    51: "Search and Rescue vessel",
+    52: "Tug",
+    53: "Port Tender",
+    54: "Anti-pollution equipment",
+    55: "Law Enforcement",
+    56: "Spare - Local Vessel",
+    57: "Spare - Local Vessel",
+    58: "Medical Transport",
+    59: "Noncombatant ship according to RR Resolution No. 18",
+    60: "Passenger",
+    61: "Passenger, Hazardous category A",
+    62: "Passenger, Hazardous category B",
+    63: "Passenger, Hazardous category C",
+    64: "Passenger, Hazardous category D",
+    **{i: "Passenger, Reserved for future use" for i in range(65, 69)},
+    69: "Passenger",
+    70: "Cargo",
+    71: "Cargo, Hazardous category A",
+    72: "Cargo, Hazardous category B",
+    73: "Cargo, Hazardous category C",
+    74: "Cargo, Hazardous category D",
+    **{i: "Cargo, Reserved for future use" for i in range(75, 79)},
+    79: "Cargo",
+    80: "Tanker",
+    81: "Tanker, Hazardous category A",
+    82: "Tanker, Hazardous category B",
+    83: "Tanker, Hazardous category C",
+    84: "Tanker, Hazardous category D",
+    **{i: "Tanker, Reserved for future use" for i in range(85, 89)},
+    89: "Tanker",
+    90: "Other Type",
+    91: "Other Type, Hazardous category A",
+    92: "Other Type, Hazardous category B",
+    93: "Other Type, Hazardous category C",
+    94: "Other Type, Hazardous category D",
+    **{i: "Other Type, Reserved for future use" for i in range(95, 99)},
+    99: "Other Type, no additional information"
+}
+
+AIS_TYPES: Dict[int,str] = {
+    0: "ITU 1371",
+    1: "Future - 1",
+    2: "Future - 2",
+    3: "Future - 3",
+}
+
+MONTHS: Dict[int,str] = {
+    0: "N/A",
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December",
+}
+
 PAYLOAD_BINARY_LOOKUP: Dict[str, str] = {
     chr(i): bin(i - 48 if i - 48 < 40 else i - 56)[2:].zfill(6)
     for i in range(48, 120)  # '0' to 'w' in ASCII
@@ -98,7 +182,7 @@ def safe_int(value: Optional[str], base: int = 2, signed: bool = False) -> int:
             else:
                 return int(value, base)
         except Exception as e:
-            print("Error:", e)
+            print("Error: ", e)
             return -1
     else:
         return -1

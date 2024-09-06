@@ -43,6 +43,8 @@ class AISMessage:
                     self.addSentence(sentence)
         except Exception as e: 
             raise Exception(f"Error parsing message: {e}")
+        self.payload_info = {}
+        self.payload_info_stringified = {}
         
     def toString(self):
         retString = ""
@@ -88,8 +90,11 @@ class AISMessage:
 
 
 # --- Main Program --- #
-def parse_ais_messages(file_path, delimiter = '\n'):
-    AIS_sentences = open(file_path, "r").read().split(delimiter)
+def parse_ais_messages(source, delimiter = '\n'):
+    if(type(source) == str):
+        AIS_sentences = open(source, "r").read().split(delimiter)
+    else:
+        AIS_sentences = source
     messages = []
     errors = []
     current_message = None
@@ -129,14 +134,14 @@ def main():
         times = []
         for _ in range(args.iterations):
             start_time = time.time()
-            messages = parse_ais_messages(args.file_path)[0]
+            messages = parse_ais_messages(args.file_path)
             end_time = time.time()
             times.append(end_time - start_time)
         
         avg_time = mean(times)
         print(f"Average runtime over {args.iterations} iterations: {(avg_time * 1000):.6f} ms")
-        print(f"Total messages parsed in each iteration: {len(messages)} (Total: {len(messages) * args.iterations})")
-        print(f"Average time per message: {(avg_time * 1000) / len(messages):.6f} ms")
+        print(f"Total messages parsed in each iteration: {len(messages[0])} (Total: {len(messages[0]) * args.iterations})")
+        print(f"Average time per message: {(avg_time * 1000) / len(messages[0]):.6f} ms")
     else:
         start_time = time.time()
         messages, errors = parse_ais_messages(args.file_path)
@@ -151,7 +156,7 @@ def main():
                 print(message.toString())
         
         print(f"Runtime: {(end_time - start_time) * 1000:.2f}ms")
-        print(f"Total messages parsed: {len(messages)-len(errors)}")
+        print(f"Total messages parsed: {len(messages)}")
         print(f"Errors: {len(errors)}")
 
 if __name__ == "__main__":

@@ -43,7 +43,7 @@ def decode_BSR(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
             "Position Accuracy": "High" if decoded_data["Position Accuracy"] == 1 else "Low",
             "Longitude": f"{longitude_to_string(decoded_data['Longitude'])}",
             "Latitude": f"{latitude_to_string(decoded_data['Latitude'])}",
-            "Type of Electronic Position Fixing Device": EFIX_TYPES[decoded_data["Type of Electronic Position Fixing Device"]],
+            "Type of Electronic Position Fixing Device": f"{EFIX_TYPES[decoded_data['Type of Electronic Position Fixing Device']] if decoded_data['Type of Electronic Position Fixing Device'] in EFIX_TYPES else 'Unknown'}",
             "Spare": f"{get_val(decoded_data['Spare'])}",
             "RAIM Flag": "In use" if decoded_data["RAIM Flag"] == 1 else "Not in use" if decoded_data["RAIM Flag"] == 0 else "Missing from AIS message"
         }
