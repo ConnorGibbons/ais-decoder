@@ -4,6 +4,7 @@ from statistics import mean
 from decode_CNB import decode_CNB
 from decode_BSR import decode_BSR
 from decode_VRD import decode_VRD
+from decode_BAD import decode_BAD
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 from typing import Dict, Tuple, Optional, List
 
@@ -17,6 +18,8 @@ def decodePayload(payload, message_type_int):
         return decode_BSR(payload)
     elif message_type_int == 5:
         return decode_VRD(payload)
+    elif message_type_int == 6:
+        return decode_BAD(payload)
     else:
         return ({"Error: unsupported message type"}, {"Error: unsupported message type"})
 

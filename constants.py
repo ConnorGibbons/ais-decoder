@@ -236,4 +236,5 @@ def latitude_to_string(latitude: Union[int, float]) -> str:
 def bitstring_to_ascii(bitstring: str) -> str:
     if bitstring is None:
         return "Missing from AIS message"
-    return "".join(map(BINARY_ASCII_LOOKUP.get, [bitstring[i:i+6] for i in range(0, len(bitstring), 6)]))    
+    return "".join(map(lambda x: BINARY_ASCII_LOOKUP.get(x,'') if isinstance(x,str) else '', [bitstring[i:i+6] for i in range(0, len(bitstring), 6)]))    
+
