@@ -8,20 +8,31 @@ from decode_BAD import decode_BAD
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 from typing import Dict, Tuple, Optional, List
 
+
+"""Mapping for decoder functions"""
+DECODER_MAP = {
+    1: decode_CNB,
+    2: decode_CNB,
+    3: decode_CNB,
+    4: decode_BSR,
+    5: decode_VRD,
+    6: decode_BAD,
+}
+
+
 def get_payload_binary(encodedPayload, fill_bits = 0):
-    return ''.join(map(PAYLOAD_BINARY_LOOKUP.get, encodedPayload)) + '0'*int(fill_bits)
+    try:
+        return ''.join(map(PAYLOAD_BINARY_LOOKUP.get, encodedPayload)) + '0'*int(fill_bits)
+    except KeyError as e:
+       raise Exception(f"Error decoding payload: {e}")
 
 def decodePayload(payload, message_type_int):
-    if message_type_int in [1,2,3]:
-        return decode_CNB(payload)
-    elif message_type_int == 4:
-        return decode_BSR(payload)
-    elif message_type_int == 5:
-        return decode_VRD(payload)
-    elif message_type_int == 6:
-        return decode_BAD(payload)
+    decoder = DECODER_MAP.get(message_type_int)
+    if decoder:
+        return decoder(payload)
     else:
-        return ({"Error: unsupported message type"}, {"Error: unsupported message type"})
+        error_message = "Error: unsupported message type"
+        return ({"Error": error_message}, {"Error": error_message})
 
 
 # Class representing an AIS message. Contents of the "payload_info" dictionary will vary depending on the message type.
@@ -39,17 +50,19 @@ class AISMessage:
         self.channel = "N/A"
         self.message_complete = False
         try:
-            if type(sentences) == str:
+            if isinstance(sentences, str):
                 self.addSentence(sentences)
-            else:
+            elif isinstance(sentences, list):
                 for sentence in sentences:
                     self.addSentence(sentence)
+            else:
+                raise Exception("Invalid input type: expected string or list")
         except Exception as e: 
             raise Exception(f"Error parsing message: {e}")
         self.payload_info = {}
         self.payload_info_stringified = {}
         
-    def toString(self):
+    def __str__(self):
         retString = ""
         retString += f"Raw Message(s): {self.raw_sentences}\n"
         retString += f"Fragment Count: {self.fragment_count}\n"
@@ -68,36 +81,52 @@ class AISMessage:
     
     def addSentence(self, sentence):
         self.raw_sentences.append(sentence)
+        components = self.extract_sentence_components(sentence)
+        self.update_states(components)
+        self.validate_message_type()
+        
+    def extract_sentence_components(self, sentence):
         sentence_parts = sentence.split(",")
-        self.fragment_count = int(sentence_parts[1]) if self.fragment_count == -1 else self.fragment_count
-        self.current_fragment_number = int(sentence_parts[2])
-        if self.current_fragment_number == self.fragment_count:
-            self.message_complete = True
-        self.sequence_ID = sentence_parts[3] if self.sequence_ID == -1 else self.sequence_ID
-        self.channel = sentence_parts[4] if self.channel == "N/A" else self.channel
-        self.encoded_sentences.append(sentence_parts[5])
-        end_of_sentence_components = sentence_parts[6].split("*")
-        self.payload_bitstrings.append(get_payload_binary(sentence_parts[5],end_of_sentence_components[0]))
-        self.checksums.append(end_of_sentence_components[1])
-        self.message_type_int = int(self.payload_bitstrings[0][0:6], 2) if self.message_type_int == -1 else self.message_type_int
+        components = {
+            "fragment_count": int(sentence_parts[1]),
+            "current_fragment_number": int(sentence_parts[2]),
+            "sequence_ID": sentence_parts[3],
+            "channel": sentence_parts[4],
+            "encoded_sentence": sentence_parts[5],
+            "payload": get_payload_binary(sentence_parts[5]),
+            "checksum": sentence_parts[6].split("*")[1]
+        }
+        return components
+    
+    def update_states(self, components):
+        self.fragment_count = components["fragment_count"] if self.fragment_count == -1 else self.fragment_count
+        self.current_fragment_number = components["current_fragment_number"]
+        self.sequence_ID = components["sequence_ID"] if self.sequence_ID == -1 else self.sequence_ID
+        self.channel = components["channel"] if self.channel == "N/A" else self.channel
+        self.encoded_sentences.append(components["encoded_sentence"])
+        self.payload_bitstrings.append(components["payload"])
+        self.checksums.append(components["checksum"])
+        self.message_type_int = int(self.payload_bitstrings[0][0:6], 2)
+        self.message_complete = self.current_fragment_number == self.fragment_count
+
+    def validate_message_type(self):
         if self.message_type_int < 0 or self.message_type_int > 27:
             raise Exception(f"Unsupported message type: {self.message_type_int}")
-        return self
-       
-
-
-        
-
-
-
+    
+    def is_complete(self):
+        return self.message_complete
 
 
 # --- Main Program --- #
 def parse_ais_messages(source, delimiter = '\n'):
-    if(type(source) == str):
+
+    if(isinstance(source, str)):
         AIS_sentences = open(source, "r").read().split(delimiter)
-    else:
+    elif(isinstance(source, list)):
         AIS_sentences = source
+    else:
+        raise Exception("Invalid input type: expected string or list")
+    
     messages = []
     errors = []
     current_message = None
@@ -107,7 +136,7 @@ def parse_ais_messages(source, delimiter = '\n'):
         try:
             new_message = AISMessage(sentence)
             if current_message is None:
-                if new_message.message_complete:
+                if new_message.is_complete():
                     messages.append(new_message.decode())
                 else: 
                     current_message = new_message
@@ -135,9 +164,10 @@ def main():
     if args.benchmark:
         print(f"Running benchmark with {args.iterations} iterations...")
         times = []
+        AIS_sentences = open(args.file_path, "r").read().split("\n")
         for _ in range(args.iterations):
             start_time = time.time()
-            messages = parse_ais_messages(args.file_path)
+            messages = parse_ais_messages(AIS_sentences)
             end_time = time.time()
             times.append(end_time - start_time)
         
@@ -152,11 +182,11 @@ def main():
         if args.outfile:
             with open(args.outfile, "w") as f:
                 for message in messages:
-                    f.write(message.toString())
+                    f.write(message.__str__())
                     f.write("\n")
         else:
             for message in messages:
-                print(message.toString())
+                print(message.__str__())
         
         print(f"Runtime: {(end_time - start_time) * 1000:.2f}ms")
         print(f"Total messages parsed: {len(messages)}")
