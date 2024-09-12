@@ -1,6 +1,6 @@
 # decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
-from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string
+from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_course_over_ground, calculate_speed_over_ground, course_over_ground_to_string
 
 
 # -- Calculation functions --
@@ -19,24 +19,6 @@ def calculate_rate_of_turn(raw_rot: Optional[int]) -> Union[int, float]:
         return (raw_rot / 4.733) ** 2
     elif -126 <= raw_rot < 0:
         return -((raw_rot / 4.733) ** 2)
-
-def calculate_speed_over_ground(raw_sog: Optional[int]) -> Union[int, float]:
-    """Calculate speed over ground in knots."""
-    if raw_sog is None:
-        return -1
-    elif raw_sog in (1023, 1022):
-        return raw_sog
-    else:
-        return raw_sog / 10
-
-def calculate_course_over_ground(raw_cog: Optional[int]) -> Union[int, float]:
-    """Calculate course over ground in degrees."""
-    if raw_cog is None:
-        return -1
-    elif raw_cog == 3600:
-        return 3600
-    else:
-        return raw_cog / 10
 
 def calculate_heading(raw_heading: Optional[int]) -> int:
     """Calculate heading in degrees."""
@@ -68,24 +50,7 @@ def rate_of_turn_to_string(rot: Union[int, float]) -> str:
         return "Not turning"
     else:
         return f"{rot}° per minute"
-    
-def speed_over_ground_to_string(sog: Union[int, float]) -> str:
-    if sog == -1:
-        return "Missing from AIS message"
-    elif sog == 1023:
-        return "SOG not available."
-    elif sog == 1022:
-        return "SOG exceeds 102.2 knots."
-    else:
-        return f"{sog} knots"
-    
-def course_over_ground_to_string(cog: Union[int, float]) -> str:
-    if cog == -1:
-        return "Missing from AIS message"
-    elif cog == 3600:
-        return "COG not available."
-    else:
-        return f"{cog}°"
+        
     
 def heading_to_string(heading: int) -> str:
     if heading == -1:

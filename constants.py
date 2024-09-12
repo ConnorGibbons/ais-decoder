@@ -213,6 +213,24 @@ def calculate_latitude(rawLatitude: Optional[int]) -> Union[int, float]:
         return -1 
     else:
         return rawLatitude / 600000
+    
+def calculate_speed_over_ground(raw_sog: Optional[int]) -> Union[int, float]:
+    """Calculate speed over ground in knots."""
+    if raw_sog is None:
+        return -1
+    elif raw_sog in (1023, 1022):
+        return raw_sog
+    else:
+        return raw_sog / 10
+
+def calculate_course_over_ground(raw_cog: Optional[int]) -> Union[int, float]:
+    """Calculate course over ground in degrees."""
+    if raw_cog is None:
+        return -1
+    elif raw_cog == 3600:
+        return 3600
+    else:
+        return raw_cog / 10
 
 
 # -- String Conversion Functions -- 
@@ -238,3 +256,20 @@ def bitstring_to_ascii(bitstring: str) -> str:
         return "Missing from AIS message"
     return "".join(map(lambda x: BINARY_ASCII_LOOKUP.get(x,'') if isinstance(x,str) else '', [bitstring[i:i+6] for i in range(0, len(bitstring), 6)]))    
 
+def speed_over_ground_to_string(sog: Union[int, float]) -> str:
+    if sog == -1:
+        return "Missing from AIS message"
+    elif sog == 1023:
+        return "SOG not available."
+    elif sog == 1022:
+        return "SOG exceeds 102.2 knots."
+    else:
+        return f"{sog} knots"
+
+def course_over_ground_to_string(cog: Union[int, float]) -> str:
+    if cog == -1:
+        return "Missing from AIS message"
+    elif cog == 3600:
+        return "COG not available."
+    else:
+        return f"{cog}°"
