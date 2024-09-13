@@ -1,6 +1,6 @@
 # decode_VRD.py -- logic for decoding Static and Voyage Related Data (Message Type 5)
 from typing import Dict, Tuple, Optional
-from constants import safe_int, get_segment, get_val, bitstring_to_ascii, EFIX_TYPES, SHIP_TYPE, AIS_TYPES, MONTHS
+from constants import safe_int, get_segment, get_val, bitstring_to_ascii, EFIX_TYPES, SHIP_TYPE, AIS_TYPES, MONTHS, error_tuple
 
 def decode_VRD(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
     """
@@ -59,12 +59,7 @@ def decode_VRD(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
             "Spare": f"{get_val(decoded_data['Spare'])}",
         }
     except Exception as e:
-        decoded_data = {
-            "Error": "Couldn't decode message"
-        }
-        stringified_data = {
-            "Error": f"Couldn't decode message: {e}"
-        }
+        return error_tuple(e)
     
     return (decoded_data, stringified_data)
 

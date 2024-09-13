@@ -197,6 +197,9 @@ def get_val(val: Any) -> Union[str, Any]:
     else:
         return val
 
+def error_tuple(error):
+    return ({"Error": error}, {"Error": error})
+
 
 # -- Calculation Functions -- 
 

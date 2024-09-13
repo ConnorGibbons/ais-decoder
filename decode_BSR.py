@@ -1,6 +1,6 @@
 # decode_BSR.py -- logic for decoding Base Station Reports (Message Type 4)
 from typing import Dict, Tuple, Optional, List
-from constants import EFIX_TYPES, safe_int, get_segment, get_val, calculate_latitude, calculate_longitude, latitude_to_string, longitude_to_string
+from constants import EFIX_TYPES, safe_int, get_segment, get_val, calculate_latitude, calculate_longitude, latitude_to_string, longitude_to_string, error_tuple
 
 
 def decode_BSR(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
@@ -49,12 +49,6 @@ def decode_BSR(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
         }
     
     except Exception as e:
-        decoded_data = {
-            "Error": "Couldn't decode message"
-        }
-        stringified_data = {
-            "Error": "Couldn't decode message"
-        }
-        print(e)
+        return error_tuple(e)
     
     return (decoded_data, stringified_data)

@@ -1,6 +1,6 @@
 # decode_SAR.py -- logic for decoding Standard SAR Aircraft Position Reports (Message Type 9)
 from typing import Dict, Tuple, Optional, List
-from constants import safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_speed_over_ground, calculate_course_over_ground, course_over_ground_to_string
+from constants import safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_speed_over_ground, calculate_course_over_ground, course_over_ground_to_string, error_tuple
 
 # -- String conversion functions --
 def altitude_to_string(altitude: int) -> str:
@@ -59,12 +59,6 @@ def decode_SAR(binary_payload: str):
         }
 
     except Exception as e:
-        decoded_data = {
-            "Error": "Couldn't decode message"
-        }
-        stringified_data = {
-            "Error": "Couldn't decode message"
-        }
-        print(e)
+        return error_tuple(e)
 
     return (decoded_data, stringified_data)

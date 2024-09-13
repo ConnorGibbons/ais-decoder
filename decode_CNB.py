@@ -1,6 +1,6 @@
 # decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
-from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_course_over_ground, calculate_speed_over_ground, course_over_ground_to_string
+from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_course_over_ground, calculate_speed_over_ground, course_over_ground_to_string, error_tuple
 
 
 # -- Calculation functions --
@@ -135,7 +135,6 @@ def decode_CNB(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, 
         }
 
     except Exception as e:
-        decoded_data = {"Error": "Couldn't decode message"}
-        stringified_data = {"Error": "Couldn't decode message"}
+        return error_tuple(e)
 
     return (decoded_data, stringified_data)

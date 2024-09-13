@@ -1,6 +1,6 @@
 # decode_BAK.py -- logic for decoding Binary Acknowledge Messages (type 7)
 from typing import Dict, Tuple, Optional, List
-from constants import safe_int, get_segment, get_val
+from constants import safe_int, get_segment, get_val, error_tuple
 
 def decode_BAK(binary_string: str):
     """
@@ -41,12 +41,6 @@ def decode_BAK(binary_string: str):
         }
 
     except Exception as e:
-        decoded_data = {
-            "Error": "Couldn't decode message"
-        }
-        stringified_data = {
-            "Error": "Couldn't decode message"
-        }
-        print(e)
+        return error_tuple(e)
     
     return (decoded_data, stringified_data)
