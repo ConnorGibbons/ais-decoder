@@ -1,10 +1,10 @@
-# decode_BAK.py -- logic for decoding Binary Acknowledge Messages (type 7)
+# decode_BAK.py -- logic for decoding Binary Acknowledge Messages (type 7, 13)
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, error_tuple
 
 def decode_BAK(binary_string: str):
     """
-    Decode a binary acknowledge message (BAK) message, type 7
+    Decode a binary acknowledge message (BAK) message, type 7 (format is the same as type 13)
 
     Args:
     binary_string (str): The binary payload as a string.
