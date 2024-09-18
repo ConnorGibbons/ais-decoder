@@ -1,6 +1,6 @@
 # decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
-from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_course_over_ground, calculate_speed_over_ground, course_over_ground_to_string, error_tuple
+from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_course_over_ground, calculate_speed_over_ground, course_over_ground_to_string, heading_to_string, timestamp_to_string, calculate_heading, calculate_timestamp, error_tuple
 
 
 # -- Calculation functions --
@@ -20,20 +20,6 @@ def calculate_rate_of_turn(raw_rot: Optional[int]) -> Union[int, float]:
     elif -126 <= raw_rot < 0:
         return -((raw_rot / 4.733) ** 2)
 
-def calculate_heading(raw_heading: Optional[int]) -> int:
-    """Calculate heading in degrees."""
-    if raw_heading is None:
-        return -1
-    else:
-        return raw_heading
-
-def calculate_timestamp(raw_timestamp: Optional[int]) -> int:
-    """Calculate timestamp in seconds."""
-    if raw_timestamp is None:
-        return -1
-    else:
-        return raw_timestamp
-
 
 # -- String conversion functions --
 
@@ -50,29 +36,6 @@ def rate_of_turn_to_string(rot: Union[int, float]) -> str:
         return "Not turning"
     else:
         return f"{rot}° per minute"
-        
-    
-def heading_to_string(heading: int) -> str:
-    if heading == -1:
-        return "Missing from AIS message"
-    elif heading == 511:
-        return "Not available"
-    else:
-        return f"{heading}°"
-
-def timestamp_to_string(timestamp: int) -> str:
-    if timestamp == -1:
-        return "Missing from AIS message"
-    elif timestamp == 60:
-        return "Timestamp unvailable"
-    elif timestamp == 61:
-        return "POS in manual input mode"
-    elif timestamp == 62:
-        return "POS in dead reckoning mode"
-    elif timestamp == 63:
-        return "System inoperative"
-    else:
-        return f"{str(timestamp)}s"
 
 def maneuver_indicator_to_string(maneuver_indicator: int) -> str:
     if maneuver_indicator == -1:

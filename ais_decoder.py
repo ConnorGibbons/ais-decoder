@@ -11,6 +11,8 @@ from decode_DTI import decode_DTI
 from decode_SRM import decode_SRM
 from decode_BBM import decode_BBM
 from decode_INT import decode_INT
+from decode_AMC import decode_AMC
+from decode_BPR import decode_BPR
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 from typing import Dict, Tuple, Optional, List, Union, Callable
 
@@ -30,7 +32,9 @@ DECODER_MAP: Dict[int, Callable] = {
     11: decode_BSR,
     13: decode_BAK,
     14: decode_SRM,
-    15: decode_INT
+    15: decode_INT,
+    16: decode_AMC,
+    18: decode_BPR,
 }
 
 

@@ -1,7 +1,7 @@
 # decode_INT.py - decode interrogations (message type 15)
 from constants import *
-
-def decode_INT(binary_string):
+from typing import Dict, Tuple, Optional
+def decode_INT(binary_string: str):
     """
     Decode Interrogation (message type 15)
 
@@ -13,7 +13,7 @@ def decode_INT(binary_string):
     """
 
     try:
-        decoded_data = {
+        decoded_data: Dict[str, int] = {
             "MMSI": safe_int(get_segment(binary_string, 8, 38)),
             "Spare": safe_int(get_segment(binary_string, 38, 40)),
             "Interrogated MMSI 1": safe_int(get_segment(binary_string, 40, 70)),
@@ -29,7 +29,7 @@ def decode_INT(binary_string):
             "Spare 4": safe_int(get_segment(binary_string, 158, 160)),
         }
 
-        stringified_data = {
+        stringified_data: Dict[str, str] = {
             "MMSI": f"{get_val(decoded_data['MMSI'])}",
             "Interrogated MMSI": f"{get_val(decoded_data['Interrogated MMSI'])}",
             "Message Type 1": f"{get_val(decoded_data['Message Type 1'])}",

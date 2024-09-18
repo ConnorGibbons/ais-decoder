@@ -235,6 +235,19 @@ def calculate_course_over_ground(raw_cog: Optional[int]) -> Union[int, float]:
     else:
         return raw_cog / 10
 
+def calculate_heading(raw_heading: Optional[int]) -> int:
+    """Calculate heading in degrees."""
+    if raw_heading is None:
+        return -1
+    else:
+        return raw_heading
+
+def calculate_timestamp(raw_timestamp: Optional[int]) -> int:
+    """Calculate timestamp in seconds."""
+    if raw_timestamp is None:
+        return -1
+    else:
+        return raw_timestamp
 
 # -- String Conversion Functions -- 
 
@@ -276,3 +289,25 @@ def course_over_ground_to_string(cog: Union[int, float]) -> str:
         return "COG not available."
     else:
         return f"{cog}°"
+    
+def heading_to_string(heading: int) -> str:
+    if heading == -1:
+        return "Missing from AIS message"
+    elif heading == 511:
+        return "Not available"
+    else:
+        return f"{heading}°"
+
+def timestamp_to_string(timestamp: int) -> str:
+    if timestamp == -1:
+        return "Missing from AIS message"
+    elif timestamp == 60:
+        return "Timestamp unvailable"
+    elif timestamp == 61:
+        return "POS in manual input mode"
+    elif timestamp == 62:
+        return "POS in dead reckoning mode"
+    elif timestamp == 63:
+        return "System inoperative"
+    else:
+        return f"{str(timestamp)}s"
