@@ -13,6 +13,8 @@ from decode_BBM import decode_BBM
 from decode_INT import decode_INT
 from decode_AMC import decode_AMC
 from decode_BPR import decode_BPR
+from decode_BPR_extended import decode_BPR_extended
+from decode_ATN import decode_ATN
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 from typing import Dict, Tuple, Optional, List, Union, Callable
 
@@ -35,6 +37,8 @@ DECODER_MAP: Dict[int, Callable] = {
     15: decode_INT,
     16: decode_AMC,
     18: decode_BPR,
+    19: decode_BPR_extended,
+    21: decode_ATN
 }
 
 

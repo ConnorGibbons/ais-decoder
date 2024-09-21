@@ -6,7 +6,7 @@ from typing import Optional, Union, List, Dict, Any
 """EFIX Types List (in order of EFIX type number)"""
 """EFIX = Electronic Fixing Device, this describes which GNSS system the device uses"""
 EFIX_TYPES: Dict[int,str] = {
-    0: "Undefined",
+    0: "Undefined / Unknown",
     1: "GPS",
     2: "GLONASS",
     3: "Combined GPS/GLONASS",
@@ -17,6 +17,41 @@ EFIX_TYPES: Dict[int,str] = {
     8: "Galileo",
     **{i: "Unknown" for i in range(9, 15)},
     15: "Internal GNSS"
+}
+
+NAVAID_TYPES: Dict[int,str] = {
+    0: "Undefined / Unknown",
+    1: "Reference point",
+    2: "RACON (Radar marking navigation hazard)",
+    3: "Fixed structure off shore",
+    4: "Spare",
+    5: "Light without sectors",
+    6: "Light with sectors",
+    7: "Leading Light Front",
+    8: "Leading Light Rear",
+    9: "Beacon, Cardinal N",
+    10: "Beacon, Cardinal E",
+    11: "Beacon, Cardinal S",
+    12: "Beacon, Cardinal W",
+    13: "Beacon, Port hand",
+    14: "Beacon, Starboard hand",
+    15: "Beacon, Preferred Channel port hand",
+    16: "Beacon, Preferred Channel starboard hand",
+    17: "Beacon, Isolated danger",
+    18: "Beacon, Safe water",
+    19: "Beacon, Special mark",
+    20: "Cardinal Mark N",
+    21: "Cardinal Mark E",
+    22: "Cardinal Mark S",
+    23: "Cardinal Mark W",
+    24: "Port hand Mark",
+    25: "Starboard hand Mark",
+    26: "Preferred Channel Port hand",
+    27: "Preferred Channel Starboard hand",
+    28: "Isolated danger",
+    29: "Safe Water",
+    30: "Special Mark",
+    31: "Light Vessel / LANBY / Rigs"
 }
 
 """Message Types List (in order of message type number)"""
@@ -39,7 +74,7 @@ MESSAGE_TYPES: List[str] = [
     "Assignment Mode Command",
     "DGNSS Binary Broadcast Message",
     "Standard Class B CS Position Report",
-    "Extended Class B Equipment",
+    "Extended Class B CS Position Report",
     "Data Link Management",
     "Aid-to-Navigation Report",
     "Channel Management",
