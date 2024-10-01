@@ -73,6 +73,7 @@ class AISMessage:
         self.encoded_sentences: List[str] = []
         self.payload_bitstrings: List[str] = []
         self.checksums: List[str] = []
+        self.seen_fragment_numbers: List[int] = []
         self.current_fragment_number: int = 1
         self.fragment_count: int = -1
         self.sequence_ID: str = "-1"
@@ -132,13 +133,14 @@ class AISMessage:
     def update_states(self, components: Dict[str, Union[int, str]]) -> None:
         self.fragment_count = components["fragment_count"] if self.fragment_count == -1 else self.fragment_count
         self.current_fragment_number = components["current_fragment_number"]
+        self.seen_fragment_numbers.append(self.current_fragment_number)
         self.sequence_ID = components["sequence_ID"] if self.sequence_ID == "-1" else self.sequence_ID
         self.channel = components["channel"] if self.channel == "N/A" else self.channel
         self.encoded_sentences.append(components["encoded_sentence"])
         self.payload_bitstrings.append(components["payload"])
         self.checksums.append(components["checksum"])
         self.message_type_int = int(self.payload_bitstrings[0][0:6], 2)
-        self.message_complete = self.current_fragment_number == self.fragment_count
+        self.message_complete = self.seen_fragment_numbers == list(range(1, self.fragment_count + 1))
 
     def validate_message_type(self) -> None:
         if self.message_type_int < 1 or self.message_type_int > 28:
@@ -169,7 +171,7 @@ def parse_ais_messages(source: Union[str, List[str]], delimiter: str = '\n') -> 
             if current_message is None:
                 if new_message.is_complete():
                     messages.append(new_message.decode())
-                else: 
+                else:
                     current_message = new_message
             else:
                 if (new_message.sequence_ID == current_message.sequence_ID) and (new_message.fragment_count == current_message.fragment_count) and (new_message.current_fragment_number == current_message.current_fragment_number + 1):
