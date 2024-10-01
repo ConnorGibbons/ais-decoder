@@ -56,9 +56,9 @@ NAVAID_TYPES: Dict[int,str] = {
 
 """Message Types List (in order of message type number)"""
 MESSAGE_TYPES: List[str] = [
-    "Position Report Class A", # -- Supported
-    "Position Report Class A (Assigned schedule)", # -- Supported
-    "Position Report Class A (Response to interrogation)", # -- Supported
+    "Position Report Class A",
+    "Position Report Class A (Assigned schedule)",
+    "Position Report Class A (Response to interrogation)", 
     "Base Station Report", 
     "Static and Voyage Related Data",
     "Binary Addressed Message",

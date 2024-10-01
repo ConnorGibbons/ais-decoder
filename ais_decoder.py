@@ -18,6 +18,7 @@ from decode_aid_to_navigation import decode_aid_to_navigation
 from decode_static_data_report import decode_static_data_report
 from decode_single_slot_binary_message import decode_single_slot_binary_message
 from decode_multi_slot_binary_message import decode_multi_slot_binary_message
+from decode_long_range_broadcast import decode_long_range_broadcast
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 from typing import Dict, Tuple, Optional, List, Union, Callable
 
@@ -44,7 +45,8 @@ DECODER_MAP: Dict[int, Callable] = {
     21: decode_aid_to_navigation,
     24: decode_static_data_report, 
     25: decode_single_slot_binary_message,
-    26: decode_multi_slot_binary_message
+    26: decode_multi_slot_binary_message,
+    27: decode_long_range_broadcast
 }
 
 
@@ -98,6 +100,7 @@ class AISMessage:
         retString += f"Channel: {self.channel}\n"
         retString += f"Encoded Messages: {self.encoded_sentences}\n"
         retString += f"Message Type: {MESSAGE_TYPES[self.message_type_int-1]}\n"
+        retString += f"Message Type Int: {self.message_type_int}\n"
         retString += f"Payload Info: {self.payload_info_stringified}\n"
         return retString
     
@@ -138,7 +141,7 @@ class AISMessage:
         self.message_complete = self.current_fragment_number == self.fragment_count
 
     def validate_message_type(self) -> None:
-        if self.message_type_int < 0 or self.message_type_int > 27:
+        if self.message_type_int < 1 or self.message_type_int > 28:
             raise Exception(f"Unsupported message type: {self.message_type_int}")
     
     def is_complete(self) -> bool:
