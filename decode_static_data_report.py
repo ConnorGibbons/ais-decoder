@@ -60,7 +60,7 @@ def decode_static_data_report(encodedPayload: str) -> Tuple[Dict, Dict]:
                 "Spare": get_val(decoded_data_2["Spare"]),
             }
         else:
-            decodeed_data_2 = {
+            decoded_data_2 = {
                 "Spare": safe_int(get_segment(encodedPayload, 40, 168)),
             }
             stringified_data = {
