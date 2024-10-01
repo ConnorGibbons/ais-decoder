@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, error_tuple
 
 
-def decode_AMC(binary_string: str):
+def decode_assignment_mode_command(binary_string: str):
     """
     Decode Assignment Mode Command (message type 16)
 

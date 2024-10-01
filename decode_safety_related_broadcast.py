@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, bitstring_to_ascii, error_tuple
 
-def decode_SRM(binary_payload: str):
+def decode_safety_related_broadcast(binary_payload: str):
     """
     Decode an addressed safety-related message (SRM), message type 14
 

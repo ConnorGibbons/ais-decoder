@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, bitstring_to_ascii, error_tuple
 
-def decode_BAD(binary_string: str):
+def decode_binary_addressed_messsage(binary_string: str):
     """
     Decode a binary addressed message (BAD) message
     

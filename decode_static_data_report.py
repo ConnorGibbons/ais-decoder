@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, Optional, List, Union
 from constants import safe_int, get_segment, bitstring_to_ascii, get_val, error_tuple
 
-def decode_SDR(encodedPayload: str) -> Tuple[Dict, Dict]:
+def decode_static_data_report(encodedPayload: str) -> Tuple[Dict, Dict]:
     """
     Function to decode static data reports (Message type 24)
 

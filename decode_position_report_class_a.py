@@ -52,7 +52,7 @@ def maneuver_indicator_to_string(maneuver_indicator: int) -> str:
 
 
 
-def decode_CNB(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
+def decode_position_report_class_a(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
     """
     Decode a Class A Position Report (Message Types 1, 2, 3).
     

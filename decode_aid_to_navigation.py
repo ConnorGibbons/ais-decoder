@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, Optional
 from constants import *
 
-def decode_ATN(binary_string: str):
+def decode_aid_to_navigation(binary_string: str):
     """
     Decode Aid-to-Navigation (message type 21)
 

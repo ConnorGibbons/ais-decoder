@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, List, Optional
 from constants import *
 
-def decode_BPR_extended(binary_string: str):
+def decode_position_report_class_b_ext(binary_string: str):
     """
     Decode an extended class B position report (BPR), message type 19
 

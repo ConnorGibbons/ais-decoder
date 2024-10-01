@@ -13,7 +13,7 @@ def altitude_to_string(altitude: int) -> str:
     else:
         return f"{altitude} meters"
 
-def decode_SAR(binary_payload: str):
+def decode_standard_sar_aircraft_position(binary_payload: str):
     """
     Decode a Standard SAR Aircraft Position Report (Message Type 9)
 

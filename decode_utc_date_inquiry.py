@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, error_tuple
 
-def decode_DTI(binary_string: str):
+def decode_utc_date_inquiry(binary_string: str):
     """
     Decode a UTC/Date Inquiry message (DTI), message type 10
 

@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, Optional
 from constants import safe_int, get_segment, get_val, bitstring_to_ascii, EFIX_TYPES, SHIP_TYPE, AIS_TYPES, MONTHS, error_tuple
 
-def decode_VRD(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
+def decode_static_and_voyage_data(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
     """
     Decode a static and voyage related data (VRD) message, message type 5.
     

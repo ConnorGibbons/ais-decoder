@@ -1,46 +1,46 @@
 import time
 import argparse
 from statistics import mean
-from decode_CNB import decode_CNB
-from decode_BSR import decode_BSR
-from decode_VRD import decode_VRD
-from decode_BAD import decode_BAD
-from decode_BAK import decode_BAK
-from decode_SAR import decode_SAR
-from decode_DTI import decode_DTI
-from decode_SRM import decode_SRM
-from decode_BBM import decode_BBM
-from decode_INT import decode_INT
-from decode_AMC import decode_AMC
-from decode_BPR import decode_BPR
-from decode_BPR_extended import decode_BPR_extended
-from decode_ATN import decode_ATN
-from decode_SDR import decode_SDR
+from decode_position_report_class_a import decode_position_report_class_a
+from decode_base_station_report import decode_base_station_report
+from decode_static_and_voyage_data import decode_static_and_voyage_data
+from decode_binary_addressed_message import decode_binary_addressed_messsage
+from decode_binary_acknowledge import decode_binary_acknowledge
+from decode_binary_broadcast_message import decode_binary_broadcast_message
+from decode_standard_sar_aircraft_position import decode_standard_sar_aircraft_position
+from decode_utc_date_inquiry import decode_utc_date_inquiry
+from decode_safety_related_broadcast import decode_safety_related_broadcast
+from decode_interrogation import decode_interrogation
+from decode_assignment_mode_command import decode_assignment_mode_command
+from decode_position_report_class_b import decode_position_report_class_b
+from decode_position_report_class_b_ext import decode_position_report_class_b_ext
+from decode_aid_to_navigation import decode_aid_to_navigation
+from decode_static_data_report import decode_static_data_report
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 from typing import Dict, Tuple, Optional, List, Union, Callable
 
 
 """Mapping for decoder functions"""
 DECODER_MAP: Dict[int, Callable] = {
-    1: decode_CNB,
-    2: decode_CNB,
-    3: decode_CNB,
-    4: decode_BSR,
-    5: decode_VRD,
-    6: decode_BAD,
-    7: decode_BAK,
-    8: decode_BBM,
-    9: decode_SAR,
-    10: decode_DTI,
-    11: decode_BSR,
-    13: decode_BAK,
-    14: decode_SRM,
-    15: decode_INT,
-    16: decode_AMC,
-    18: decode_BPR,
-    19: decode_BPR_extended,
-    21: decode_ATN,
-    24: decode_SDR
+    1: decode_position_report_class_a,
+    2: decode_position_report_class_a,
+    3: decode_position_report_class_a,
+    4: decode_base_station_report,
+    5: decode_static_and_voyage_data,
+    6: decode_binary_addressed_messsage,
+    7: decode_binary_acknowledge,
+    8: decode_binary_broadcast_message,
+    9: decode_standard_sar_aircraft_position,
+    10: decode_utc_date_inquiry,
+    11: decode_base_station_report,
+    13: decode_binary_acknowledge,
+    14: decode_safety_related_broadcast,
+    15: decode_interrogation,
+    16: decode_assignment_mode_command,
+    18: decode_position_report_class_b,
+    19: decode_position_report_class_b_ext,
+    21: decode_aid_to_navigation,
+    24: decode_static_data_report, 
 }
 
 

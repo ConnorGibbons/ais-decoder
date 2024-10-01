@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, error_tuple
 
-def decode_BAK(binary_string: str):
+def decode_binary_acknowledge(binary_string: str):
     """
     Decode a binary acknowledge message (BAK) message, type 7 (format is the same as type 13)
 

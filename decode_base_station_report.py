@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Optional, List
 from constants import EFIX_TYPES, safe_int, get_segment, get_val, calculate_latitude, calculate_longitude, latitude_to_string, longitude_to_string, error_tuple
 
 
-def decode_BSR(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
+def decode_base_station_report(binary_string: str) -> Tuple[Dict[str, Optional[int]], Dict[str, str]]:
     """
     Decode a base station report (BSR) message, message type 4.
     

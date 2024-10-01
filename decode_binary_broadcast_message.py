@@ -2,7 +2,7 @@
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, bitstring_to_ascii, error_tuple
 
-def decode_BBM(binary_payload: str):
+def decode_binary_broadcast_message(binary_payload: str):
     """
     Decode a binary broadcast message (BBM), message type 8
 
