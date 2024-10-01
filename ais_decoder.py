@@ -16,6 +16,8 @@ from decode_position_report_class_b import decode_position_report_class_b
 from decode_position_report_class_b_ext import decode_position_report_class_b_ext
 from decode_aid_to_navigation import decode_aid_to_navigation
 from decode_static_data_report import decode_static_data_report
+from decode_single_slot_binary_message import decode_single_slot_binary_message
+from decode_multi_slot_binary_message import decode_multi_slot_binary_message
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
 from typing import Dict, Tuple, Optional, List, Union, Callable
 
@@ -41,6 +43,8 @@ DECODER_MAP: Dict[int, Callable] = {
     19: decode_position_report_class_b_ext,
     21: decode_aid_to_navigation,
     24: decode_static_data_report, 
+    25: decode_single_slot_binary_message,
+    26: decode_multi_slot_binary_message
 }
 
 
