@@ -1,4 +1,4 @@
-# decode_BAK.py -- logic for decoding Binary Acknowledge Messages (type 7, 13)
+# decode_binary_acknowledge.py -- logic for decoding Binary Acknowledge Messages (type 7, 13)
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, error_tuple
 

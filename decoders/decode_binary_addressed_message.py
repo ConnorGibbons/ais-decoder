@@ -1,4 +1,4 @@
-# decode_BAD.py -- logic for decoding Binary Addressed Messages (type 6)
+# decode_binary_addressed_message.py -- logic for decoding Binary Addressed Messages (type 6)
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, bitstring_to_ascii, error_tuple
 

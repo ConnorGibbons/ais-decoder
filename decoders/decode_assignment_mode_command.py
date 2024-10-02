@@ -1,4 +1,4 @@
-# decode_AMC.py - Logic for decoding Assignment Mode Command messages (message type 16)
+# decode_assignment_mode_command.py - Logic for decoding Assignment Mode Command messages (message type 16)
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, error_tuple
 

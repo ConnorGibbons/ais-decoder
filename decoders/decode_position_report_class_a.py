@@ -1,4 +1,4 @@
-# decode_CNB.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
+# decode_position_report_class_a.py -- logic for decoding Class A Position Reports (Message Types 1, 2, 3)
 from typing import Tuple, Dict, Optional, Union
 from constants import NAVIGATION_STATUS, safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_course_over_ground, calculate_speed_over_ground, course_over_ground_to_string, heading_to_string, timestamp_to_string, calculate_heading, calculate_timestamp, error_tuple
 

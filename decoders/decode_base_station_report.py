@@ -1,4 +1,4 @@
-# decode_BSR.py -- logic for decoding Base Station Reports (Message Type 4)
+# decode_base_station_report.py -- logic for decoding Base Station Reports (Message Type 4)
 from typing import Dict, Tuple, Optional, List
 from constants import EFIX_TYPES, safe_int, get_segment, get_val, calculate_latitude, calculate_longitude, latitude_to_string, longitude_to_string, error_tuple
 

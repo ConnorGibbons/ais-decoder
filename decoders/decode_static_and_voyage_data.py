@@ -1,4 +1,4 @@
-# decode_VRD.py -- logic for decoding Static and Voyage Related Data (Message Type 5)
+# decode_static_and_voyage_data.py -- logic for decoding Static and Voyage Related Data (Message Type 5)
 from typing import Dict, Tuple, Optional
 from constants import safe_int, get_segment, get_val, bitstring_to_ascii, EFIX_TYPES, SHIP_TYPE, AIS_TYPES, MONTHS, error_tuple
 

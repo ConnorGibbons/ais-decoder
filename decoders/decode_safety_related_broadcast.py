@@ -1,4 +1,4 @@
-# decode_SRM.py - logic for decoding Addressed Safety-Related Messages (Message Type 14)
+# decode_safety_related_broadcast.py - logic for decoding Addressed Safety-Related Messages (Message Type 14)
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, bitstring_to_ascii, error_tuple
 

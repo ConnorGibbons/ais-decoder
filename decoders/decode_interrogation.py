@@ -1,4 +1,4 @@
-# decode_INT.py - decode interrogations (message type 15)
+# decode_interrogation.py - decode interrogations (message type 15)
 from constants import *
 from typing import Dict, Tuple, Optional
 def decode_interrogation(binary_string: str):

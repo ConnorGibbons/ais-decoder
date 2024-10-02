@@ -1,4 +1,4 @@
-# decode_SAR.py -- logic for decoding Standard SAR Aircraft Position Reports (Message Type 9)
+# decode_standard_sar_aircraft_position.py -- logic for decoding Standard SAR Aircraft Position Reports (Message Type 9)
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, calculate_longitude, calculate_latitude, longitude_to_string, latitude_to_string, speed_over_ground_to_string, calculate_speed_over_ground, calculate_course_over_ground, course_over_ground_to_string, error_tuple
 

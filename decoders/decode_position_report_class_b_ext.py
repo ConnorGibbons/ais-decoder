@@ -1,4 +1,4 @@
-# decode_BPR_extended.py -- logic for decoding extended class B position reports. (Message type 19)
+# decode_position_report_class_b_ext.py -- logic for decoding extended class B position reports. (Message type 19)
 from typing import Dict, Tuple, List, Optional
 from constants import *
 

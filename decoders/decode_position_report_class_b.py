@@ -1,4 +1,4 @@
-# decode_BPR.py - Logic for decoding class B position reports. (Message type 18)
+# decode_position_report_class_b.py - Logic for decoding class B position reports. (Message type 18)
 from typing import Dict, Tuple, List, Optional
 from constants import safe_int, get_segment, get_val, error_tuple, calculate_course_over_ground, calculate_latitude, calculate_longitude, calculate_speed_over_ground, calculate_timestamp, calculate_heading, speed_over_ground_to_string, course_over_ground_to_string, heading_to_string, latitude_to_string, longitude_to_string, timestamp_to_string
 

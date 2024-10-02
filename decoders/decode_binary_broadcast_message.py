@@ -1,4 +1,4 @@
-# decode_BBM.py - logic for decoding Binary Broadcast Messages (Message Type 8)
+# decode_binary_broadcast_message.py - logic for decoding Binary Broadcast Messages (Message Type 8)
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, bitstring_to_ascii, error_tuple
 

@@ -1,4 +1,4 @@
-# decode_ATN.py -- Logic for decoding Aid-to-Navigation messages (message type 21)
+# decode_aid_to_navigation.py -- Logic for decoding Aid-to-Navigation messages (message type 21)
 from typing import Dict, Tuple, Optional
 from constants import *
 

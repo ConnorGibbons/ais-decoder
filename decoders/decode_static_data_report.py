@@ -1,4 +1,4 @@
-# decode_SDR.py -- logic for decoding static data reports (Message type 24)
+# decode_static_data_report.py -- logic for decoding static data reports (Message type 24)
 from typing import Dict, Tuple, Optional, List, Union
 from constants import safe_int, get_segment, bitstring_to_ascii, get_val, error_tuple
 

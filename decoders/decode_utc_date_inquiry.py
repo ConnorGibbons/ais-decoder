@@ -1,4 +1,4 @@
-# decode_DTI.py -- logic for decoding UTC/Date Inquiry Messages (type 10)
+# decode_utc_date_inquiry.py -- logic for decoding UTC/Date Inquiry Messages (type 10)
 from typing import Dict, Tuple, Optional, List
 from constants import safe_int, get_segment, get_val, error_tuple
 
