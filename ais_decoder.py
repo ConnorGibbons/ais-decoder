@@ -8,14 +8,14 @@ from typing import Dict, Tuple, Optional, List, Union, Callable
 
 """Mapping for decoder functions"""
 DECODER_MAP: Dict[int, Callable] = {
-    1: decode_position_report_class_a,
-    2: decode_position_report_class_a,
-    3: decode_position_report_class_a,
-    4: decode_base_station_report,
-    5: decode_static_and_voyage_data,
-    6: decode_binary_addressed_messsage,
-    7: decode_binary_acknowledge,
-    8: decode_binary_broadcast_message,
+    1: decode_position_report_class_a, #
+    2: decode_position_report_class_a, #
+    3: decode_position_report_class_a, #
+    4: decode_base_station_report, #
+    5: decode_static_and_voyage_data, #
+    6: decode_binary_addressed_messsage, #
+    7: decode_binary_acknowledge, # ?
+    8: decode_binary_broadcast_message, 
     9: decode_standard_sar_aircraft_position,
     10: decode_utc_date_inquiry,
     11: decode_base_station_report,

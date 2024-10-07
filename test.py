@@ -215,6 +215,33 @@ class test_decode_binary_addressed_message(test_AIS_decoder):
         self.assertEqual(self.aisMessage.payload_info["Data"], "@D@@@@@@@@@@@")
         self.assertEqual(self.aisMessage2.payload_info["Data"], "L @")
 
+class test_decode_binary_acknowledge(test_AIS_decoder): # Can't find any test messages for this message type
+    def setUp(self):
+        self.testMessage = ""
+
+class test_decode_binary_broadcast_message(test_AIS_decoder): 
+    def setUp(self):
+        self.testMessage = ['!AIVDM,2,1,0,A,85PH6MiKfI>IpPLg>bvJf?8GTtIr1CQirolq>IQglM<sIhDlpEA2P`otmk=7,0*5A', '!AIVDM,2,2,0,A,EeImW91irfj<GBm;LaiG2uaw8o14c9qIDut,2*10']
+        self.testMessage2 = '!AIVDM,1,1,,A,83aDq?@j2ddt<e=<80h`K?aE6M00,0*59'
+        self.aisMessage = ais_decoder.AISMessage(self.testMessage).decode()
+        self.aisMessage2 = ais_decoder.AISMessage(self.testMessage2).decode()
+
+    def test_decode_MMSI(self):
+        self.assertEqual(self.aisMessage.payload_info["MMSI"], 369493623)
+        self.assertEqual(self.aisMessage2.payload_info["MMSI"], 244660541)
     
+    def test_decode_designated_area_code(self):
+        self.assertEqual(self.aisMessage.payload_info["Designated Area Code"], 366)
+        self.assertEqual(self.aisMessage2.payload_info["Designated Area Code"], 200)
+
+    def test_decode_functional_ID(self):
+        self.assertEqual(self.aisMessage.payload_info["Functional ID"], 57)
+        self.assertEqual(self.aisMessage2.payload_info["Functional ID"], 10)
+
+    def test_decode_data(self):
+    #    self.assertEqual(self.aisMessage.payload_info["Data"], "")  -- Online decoders seem to be a little puzzled by this message
+        self.assertEqual(self.aisMessage2.payload_info["Data"], "2302440 CB!,>%TY4@")
+
+
 if __name__ == '__main__':
     unittest.main()
