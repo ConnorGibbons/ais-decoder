@@ -1,5 +1,6 @@
 import time
 import argparse
+import json
 from statistics import mean
 from decoders import *
 from constants import MESSAGE_TYPES, PAYLOAD_BINARY_LOOKUP
@@ -75,6 +76,18 @@ class AISMessage:
             raise Exception(f"Error parsing message: {e}")
         self.payload_info: Dict = {}
         self.payload_info_stringified: Dict = {}
+
+    def __dict__(self) -> Dict:
+        return {
+            "Raw Message(s)": self.raw_sentences,
+            "Fragment Count": self.fragment_count,
+            "Sequence ID": self.sequence_ID,
+            "Channel": self.channel,
+            "Encoded Messages": self.encoded_sentences,
+            "Message Type": MESSAGE_TYPES[self.message_type_int-1],
+            "Payload Info": self.payload_info,
+            "Payload Info (Stringified)": self.payload_info_stringified
+        }
         
     def __str__(self) -> str:
         retString = ""
@@ -174,6 +187,7 @@ def main() -> None:
     parser.add_argument("--benchmark", action="store_true", help="Run in benchmark mode")
     parser.add_argument("--iterations", type=int, default=100, help="Number of iterations for benchmark (default: 100)")
     parser.add_argument("--outfile", help="Path to the file to write the decoded messages to")
+    parser.add_argument("--json", help="Output as array of JSON objects", default=False, type=bool)
     args = parser.parse_args()
 
     if args.benchmark:
@@ -196,12 +210,18 @@ def main() -> None:
         end_time = time.time()
         if args.outfile:
             with open(args.outfile, "w") as f:
-                for message in messages:
-                    f.write(message.__str__())
-                    f.write("\n")
+                if args.json:
+                    f.write(json.dumps([message.__dict__() for message in messages], indent=4))
+                else:
+                    for message in messages:
+                        f.write(message.__str__())
+                        f.write("\n")
         else:
-            for message in messages:
-                print(message.__str__())
+            if args.json:
+                print(json.dumps([message.__dict__() for message in messages], indent=4))
+            else:
+                for message in messages:
+                    print(message)
         
         print(f"Runtime: {(end_time - start_time) * 1000:.2f}ms")
         print(f"Total messages parsed: {len(messages)}")
